@@ -3,868 +3,163 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#11100f">
-<title>Wonq — Compagnon de combat v5 preview</title>
+<meta name="theme-color" content="#0b0d0d">
+<title>Wonq — Gardien des Absents</title>
 <style>
-:root{--bg:#0f0e0d;
---panel:#1b1917;
---panel2:#24211e;
---line:#5f503c;
---gold:#c9a566;
---ivory:#f2ead9;
---muted:#b6aa94;
---teal:#315b5b;
---purple:#563f63;
---green:#3d6249;
---blue:#344a66}
-*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;
-background:radial-gradient(circle at top,#1b1815 0,#0f0e0d 55%);
-color:var(--ivory);
-font-family:Georgia,"Times New Roman",serif}
-button,input{font:inherit}button{min-height:44px;
-border:1px solid #6a5b45;
-background:#292521;
-color:var(--ivory);
-border-radius:10px;
-padding:9px 12px;
-cursor:pointer}button:disabled{opacity:.38;
-cursor:not-allowed}
-.wrap{max-width:1050px;
-margin:auto;
-padding:12px}.shell{background:linear-gradient(180deg,#171513,#100f0e);
-border:1px solid #514635;
-border-radius:17px;
-padding:14px;
-box-shadow:0 16px 50px rgba(0,0,0,.38)}
-.head{text-align:center;
-padding:4px 4px 14px;
-border-bottom:1px solid #514635}h1{margin:0;
-font-size:clamp(34px,8vw,54px);
-letter-spacing:.12em;
-color:var(--gold)}.subtitle{font-style:italic;
-color:var(--muted)}
-.grid{display:grid;
-gap:8px}.stats{grid-template-columns:repeat(6,1fr);
-margin-top:12px}.resources{grid-template-columns:repeat(5,1fr);
-margin-top:8px}.card{background:linear-gradient(180deg,var(--panel2),var(--panel));
-border:1px solid var(--line);
-border-radius:12px;
-padding:11px}.center{text-align:center}.big{display:block;
-font-size:22px;
-color:var(--gold);
-font-weight:bold}
-.turn-economy{display:grid;
-grid-template-columns:auto repeat(3,1fr) auto;
-gap:7px;
-align-items:stretch;
-margin-top:10px}.turn-label{display:flex;
-align-items:center;
-justify-content:center;
-min-width:78px;
-min-height:54px;
-padding:7px 10px;
-border:1px solid #5b4a35;
-border-radius:9px;
-background:#201a13;
-color:#f0c36d}.eco{padding:7px 8px;
-border:1px solid #394154;
-border-radius:9px;
-background:#151310;
-text-align:center;
-font-size:12px;
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-min-height:54px;
-line-height:1.15}.eco b{display:block;
-font-size:13px;
-margin-bottom:4px}.eco.used{opacity:.55;
-border-color:#684747}.eco.free{border-color:#45634b}.turn-next{min-height:54px;
-white-space:nowrap;
-border-color:#6b5b38;
-background:#302619;
-color:#f0d08b;
-font-weight:bold}
-.tabs{display:flex;
-flex-wrap:wrap;
-gap:7px;
-margin:12px 0;
-position:sticky;
-top:max(6px,env(safe-area-inset-top));
-z-index:20;
-padding:6px;
-border:1px solid #554a39;
-border-radius:14px;
-background:rgba(17,15,13,.92);
-backdrop-filter:blur(9px)}.tab{flex:1}.tab.active{background:var(--teal);
-border-color:#739393}.panel{display:none}.panel.active{display:block}.two{grid-template-columns:repeat(2,1fr)}.tales{grid-template-columns:repeat(2,1fr)}
-.action-title{font-weight:bold;
-color:var(--gold);
-font-size:17px}.meta{font-size:13px;
-color:var(--muted);
-margin-top:3px}.row{display:flex;
-gap:7px;
-flex-wrap:wrap;
-margin-top:9px}.spirit{background:var(--purple)}.heal{background:var(--green)}.main{background:var(--teal)}.blue{background:var(--blue)}.rule{border-left:3px solid var(--gold);
-padding:9px 11px;
-background:#1e1a16;
-color:var(--muted);
-border-radius:6px;
-font-size:13px;
-margin-top:10px}.badge{display:inline-block;
-border:1px solid #74634c;
-border-radius:999px;
-padding:2px 7px;
-font-size:12px;
-color:var(--muted)}
-.slotrow{display:flex;
-align-items:center;
-gap:7px;
-margin:8px 0}.pip{width:28px;
-height:28px;
-min-height:28px;
-padding:0;
-border-radius:50%;
-background:var(--gold);
-border-color:var(--gold)}.pip.off{background:transparent}.hp-controls{display:flex;
-justify-content:center;
-align-items:center;
-gap:5px;
-margin-top:4px}.hp-controls input{width:66px;
-min-height:44px;
-text-align:center;
-background:#13110f;
-color:var(--ivory);
-border:1px solid #665640;
-border-radius:8px;
-font-size:16px}
-.utility-bar{display:grid;
-grid-template-columns:1.2fr 1fr;
-gap:8px;
-margin-top:12px;
-padding-top:10px;
-border-top:1px solid #4a4032}.utility-group{display:grid;
-gap:7px}.utility-rest{grid-template-columns:repeat(4,1fr)}.utility-tools{grid-template-columns:repeat(3,1fr)}.utility-bar button{width:100%}.utility-danger{color:#d8a7af!important;
-border-color:#71404b!important}.save-status{text-align:right;
-opacity:.7;
-margin-top:5px;
-font-size:11px}
-.log{margin-top:10px;
-background:#0b0a09;
-border:1px solid #4b4133;
-border-radius:11px;
-min-height:135px;
-max-height:320px;
-overflow:auto;
-padding:11px;
-white-space:pre-wrap;
-font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
-font-size:13px}#historyPanel{display:none;
-margin-top:10px}#historyPanel.open{display:block}
-#wonq-sticky-result{position:fixed;
-top:max(8px,env(safe-area-inset-top));
-left:50%;
-transform:translate(-50%,-140%);
-width:min(calc(100% - 16px),760px);
-z-index:9999;
-background:linear-gradient(90deg,#6a2f2a 0%,#7a3b31 30%,#5a3f66 100%);
-border:2px solid #e0bd77;
-border-radius:14px;
-padding:12px 14px;
-box-shadow:0 12px 34px rgba(0,0,0,.62);
-opacity:0;
-pointer-events:none;
-transition:.25s}
-#wonq-sticky-result.show{transform:translate(-50%,0);
-opacity:1;
-pointer-events:auto}#wonq-sticky-result .title{color:#fff4dc;
-font-weight:800;
-font-size:14px;
-letter-spacing:.06em;
-text-transform:uppercase}#wonq-sticky-result .body{margin-top:6px;
-color:#fffdf8;
-font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
-font-size:15px;
-line-height:1.35;
-white-space:pre-wrap;
-font-weight:800}#wonq-sticky-result .hint{margin-top:5px;
-color:#eadfc9;
-font-size:11px}
-@media(max-width:760px){.stats{grid-template-columns:repeat(3,1fr)}.resources{grid-template-columns:repeat(2,1fr)}.two,.tales{grid-template-columns:1fr}.turn-economy{grid-template-columns:1fr 1fr}.turn-label,.turn-next{grid-column:1/-1}.utility-bar{grid-template-columns:1fr}.utility-rest,.utility-tools{grid-template-columns:repeat(2,1fr)}.save-status{text-align:center}.wrap{padding:7px}.shell{padding:10px}}
-</style>
-<style>
-.turn-economy{grid-template-columns:auto repeat(4,minmax(82px,1fr)) auto auto auto}.quick-rest{min-height:54px;
-padding:6px 9px;
-font-weight:bold;
-white-space:nowrap}.quick-rest.long{background:#201d31;
-border-color:#62577a}.state-strip{display:flex;
-gap:7px;
-flex-wrap:wrap;
-margin:8px 0}.state-chip{border:1px solid #665a4b;
-border-radius:999px;
-padding:5px 9px;
-background:#151311;
-color:var(--muted);
-font-size:12px}.state-chip.active{color:#f5e7bd;
-border-color:var(--gold);
-box-shadow:0 0 12px #c9a56633}.attack-options{display:flex;
-gap:6px;
-flex-wrap:wrap;
-margin-top:9px}.toggle.on{background:var(--teal);
-border-color:#83a6a2}.manual{width:58px;
-background:#13110f;
-color:var(--ivory);
-border:1px solid #665640;
-border-radius:8px;
-padding:7px}.journal-head{display:flex;
-align-items:center;
-justify-content:space-between;
-gap:10px;
-flex-wrap:wrap}.journal-tools{display:flex;
-gap:7px;
-flex-wrap:wrap}.journal-tools input{background:#100e0c;
-color:var(--ivory);
-border:1px solid var(--line);
-border-radius:9px;
-padding:9px}.timeline{display:grid;
-gap:13px;
-margin-top:12px}.turn-group{border-left:2px solid #6f5c3d;
-padding-left:13px}.turn-group h3{color:var(--gold);
-margin:0 0 7px}.history-entry{background:#100e0c;
-border:1px solid #3f382f;
-border-left:3px solid #7d6747;
-border-radius:9px;
-padding:9px;
-margin:6px 0}.history-entry strong{display:block}.history-entry span{color:var(--muted);
-font-size:13px}.history-entry.spirit{border-left-color:#a780bd}.history-entry.heal{border-left-color:#63a77b}.history-entry.fail{border-left-color:#b75d5d}.history-empty{padding:28px;
-text-align:center;
-color:var(--muted);
-border:1px dashed var(--line);
-border-radius:10px}
-#wonq-sticky-result{display:grid;
-grid-template-columns:auto 1fr auto;
-align-items:center;
-gap:10px}.ribbon-close{min-height:36px;
-padding:4px 9px;
-background:transparent}.result-badge{position:fixed;
-right:max(10px,env(safe-area-inset-right));
-bottom:max(10px,env(safe-area-inset-bottom));
-z-index:9998;
-display:none;
-border-color:var(--gold);
-background:linear-gradient(135deg,#33263b,#171311);
-box-shadow:0 8px 26px #000b}.result-badge.show{display:block}
-.hit-modal[hidden]{display:none}.hit-modal{position:fixed;
-inset:0;
-z-index:10000;
-display:grid;
-place-items:center;
-padding:18px;
-background:#050303d5;
-backdrop-filter:blur(7px)}.hit-box{width:min(470px,100%);
-text-align:center;
-background:linear-gradient(145deg,#29211c,#100e0d);
-border:1px solid var(--gold);
-border-radius:18px;
-padding:20px;
-box-shadow:0 24px 80px #000}.hit-roll{font-size:clamp(42px,10vw,70px);
-font-weight:bold;
-color:var(--gold);
-margin:8px}.hit-actions{display:grid;
-grid-template-columns:1fr 1fr;
-gap:9px;
-margin-top:15px}.hit-no{background:#482525;
-border-color:#8d4c4c}.hit-yes{background:#254735;
-border-color:#568a69}
-.fx-stage{position:fixed;
-inset:0;
-z-index:9997;
-pointer-events:none;
-opacity:0}.fx-stage.play{animation:fxfade .9s ease-out}.fx-stage.spirit{background:radial-gradient(circle,#8f66aa55,transparent 55%)}.fx-stage.hit{background:radial-gradient(circle,#f0dfad44,transparent 50%)}.fx-stage.fail{background:linear-gradient(110deg,transparent 40%,#8f303038 50%,transparent 60%)}.fx-stage.crit{background:radial-gradient(circle,#fff4ba88 0 4%,#8d68a755 18%,transparent 53%)}.fx-label{position:absolute;
-left:50%;
-top:50%;
-transform:translate(-50%,-50%);
-font:bold clamp(24px,7vw,56px) Georgia;
-color:#fff4d4;
-text-shadow:0 0 24px #8f66aa;
-letter-spacing:.08em}.fx-orb{position:absolute;
-left:50%;
-top:50%;
-width:var(--s);
-height:var(--s);
-border-radius:50%;
-background:#b998cc;
-box-shadow:0 0 12px #d7b9e8;
-animation:orb .85s ease-out forwards}@keyframes fxfade{0%{opacity:0}20%{opacity:1}100%{opacity:0}}@keyframes orb{to{transform:translate(var(--x),var(--y)) scale(.1);
-opacity:0}}
-@media(max-width:760px){.turn-economy{grid-template-columns:repeat(3,1fr)}.turn-label{grid-column:1}.turn-next{grid-column:2/-1}.quick-rest{font-size:12px}.tabs{overflow-x:auto;
-flex-wrap:nowrap}.tab{flex:0 0 auto}.journal-head{align-items:flex-start}.journal-tools input{width:100%}.result-badge{max-width:170px}.state-strip{position:sticky;
-top:126px;
-z-index:18;
-background:#0f0e0de8;
-padding:5px}}
-@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;
-transition:none!important}.fx-stage{display:none!important}}
+:root{--bg:#080a0a;--panel:#121514;--panel2:#191b19;--line:#3b3b35;--ink:#f3ead9;--muted:#aba494;--gold:#d5ad66;--teal:#4a7a76;--violet:#8b68a2;--violet2:#392c45;--green:#65a47b;--red:#bf635d;--blue:#6285a4;--shadow:0 16px 48px #0009;--radius:16px}
+*{box-sizing:border-box}html{background:var(--bg);scroll-behavior:smooth}body{margin:0;min-height:100vh;color:var(--ink);font:15px/1.45 ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(circle at 78% -10%,#392945 0,transparent 29rem),radial-gradient(circle at 12% 0,#263f3b 0,transparent 24rem),linear-gradient(150deg,#080a0a,#11100f)}button,input,select{font:inherit}button{color:inherit;cursor:pointer;min-height:44px}.app{max-width:1480px;margin:auto;padding:14px 18px 105px}.panel,.identity,.dashboard,.turnbar{background:linear-gradient(145deg,#181b19ee,#0d0f0ef5);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.top{display:grid;grid-template-columns:1.2fr 2fr;gap:12px}.identity{padding:18px;position:relative;overflow:hidden}.identity:after{content:'☁';position:absolute;right:15px;bottom:-28px;font-size:120px;color:#b795ca12}.eyebrow{text-transform:uppercase;letter-spacing:.15em;color:var(--gold);font-size:.72rem;font-weight:800}.identity h1{font:700 clamp(2rem,5vw,3.6rem)/.95 Georgia,serif;letter-spacing:.08em;margin:.25rem 0 .55rem}.identity p{margin:0;color:var(--muted)}.motto{margin-top:9px!important;color:#d7c8aa!important;font:italic .9rem Georgia,serif}.dashboard{padding:10px;display:grid;grid-template-columns:2fr repeat(7,1fr);gap:7px}.stat{min-width:0;padding:9px;border:1px solid #30332f;border-radius:11px;background:#0c0f0e}.stat b{display:block;font-size:1.22rem;color:#f6eedf}.stat small{display:block;color:var(--muted);font-size:.63rem;text-transform:uppercase;letter-spacing:.05em}.hpstat{grid-row:span 2}.hpgrid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:5px}.number{width:100%;min-width:0;color:var(--ink);background:#090b0a;border:1px solid #494940;border-radius:8px;padding:7px;font-weight:800}.hp-tools{display:grid;grid-template-columns:70px 1fr 1fr;gap:5px;margin-top:6px}.hp-tools button{min-height:35px;border-radius:8px;border:1px solid var(--line);background:#1a1c19;font-size:.74rem}.hp-tools input{padding:5px}
+.turnbar{position:sticky;top:7px;z-index:30;margin:12px 0 8px;padding:7px;display:grid;grid-template-columns:auto repeat(4,minmax(76px,1fr)) 1fr auto auto auto;gap:6px;backdrop-filter:blur(15px)}.turn-id{padding:7px 10px;white-space:nowrap}.turn-id b{color:var(--gold)}.economy,.damage-turn,.next,.rest{border-radius:10px;padding:7px;border:1px solid #41534d;background:#14211e;text-align:center}.economy b,.damage-turn b{display:block}.economy small,.damage-turn small{color:var(--muted)}.economy.used{opacity:.42;text-decoration:line-through;border-color:#653e3e}.damage-turn{background:#231b15;border-color:#654728}.next{border:0;background:linear-gradient(135deg,#765026,var(--gold));color:#181108;font-weight:900;padding-inline:13px}.rest{font-weight:800;background:#182019}.rest.long{background:#1d1a29;border-color:#514866}.statebar{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 9px}.state{border:1px solid #45453f;border-radius:999px;background:#101211;color:var(--muted);padding:5px 9px;font-size:.76rem}.state.on{border-color:var(--gold);color:#f0dbb4;box-shadow:0 0 12px #d5ad6630}.state.clickable{cursor:pointer}
+.nav{display:flex;gap:6px;margin:0 0 12px;overflow:auto;scrollbar-width:none}.nav button{white-space:nowrap;border:1px solid var(--line);border-radius:999px;background:#111412;padding:9px 14px}.nav button.active{background:var(--gold);border-color:var(--gold);color:#17110a;font-weight:900}.view{display:none}.view.active{display:block}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:11px}.panel{grid-column:span 4;padding:14px}.panel.wide{grid-column:span 8}.panel.full{grid-column:1/-1}.panel h2,.panel h3{font-family:Georgia,serif;margin:0 0 7px}.panel h2{color:var(--gold)}.meta{color:var(--muted);font-size:.83rem}.badges,.row,.options{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.badge{border:1px solid #464841;border-radius:999px;padding:3px 8px;font-size:.73rem;color:#d8d2c7}.primary,.ability,.toggle{border:1px solid var(--line);border-radius:10px;background:#191d1a;padding:9px 10px}.primary{width:100%;margin-top:9px;background:linear-gradient(135deg,#3c2d48,#74548b);border-color:#8f70a2;font-weight:900}.primary.teal{background:linear-gradient(135deg,#294a46,#4e817a);border-color:#6e9d96}.primary.heal{background:linear-gradient(135deg,#254731,#4e8962);border-color:#65a47b}.primary:disabled,.ability:disabled{opacity:.35;cursor:not-allowed}.toggle.on{background:#294a46;border-color:#6e9d96;box-shadow:0 0 0 1px #6e9d9640 inset}.attack-total{font:800 1.15rem Georgia,serif;color:var(--gold)}.signature{border-color:#765b82;background:linear-gradient(145deg,#211a28,#101311)}.sequence{display:grid;gap:7px}.step{border-left:3px solid var(--teal);background:#0d1110;border-radius:8px;padding:9px}.step b{color:#e8dcc6}.resource-head{display:flex;justify-content:space-between;gap:10px;align-items:center}.counter{font-size:1.25rem;color:var(--gold);font-weight:900}.dots{display:flex;gap:5px;flex-wrap:wrap}.dot{width:22px;height:22px;min-height:22px;padding:0;border-radius:50%;border:1px solid #77623d;background:#16130e}.dot.on{background:var(--gold);box-shadow:0 0 10px #d5ad6677}.spell-groups{display:grid;gap:13px}.spell-level h2{font-size:1.1rem}.spell-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.spell{border:1px solid #363a35;border-radius:11px;background:#0d100f;padding:11px}.spell h3{font-size:1rem}.spell button{width:100%;margin-top:8px}.tale-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.tale{border:1px solid #413749;border-radius:11px;background:#100e13;padding:11px}.tale.active{border-color:var(--gold);box-shadow:0 0 22px #8b68a235}.tale b{color:#ddc5e7}.rules details{border-top:1px solid var(--line);padding:9px 0}.rules summary{color:var(--gold);font-weight:800;cursor:pointer}.rules p{color:#cbc3b4}.warn{border-left:3px solid #b98446;background:#211b13;padding:9px;border-radius:7px;color:#d9c5a7}.journal-head{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}.journal-tools{display:flex;gap:6px;flex-wrap:wrap}.journal-tools input,.journal-tools select{background:#090b0a;color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:8px}.timeline{display:grid;gap:16px;margin-top:12px}.combat-group{border-left:2px solid #4d4231;padding-left:15px}.combat-title{color:var(--gold);font:800 1.05rem Georgia,serif;margin-bottom:8px}.log-entry{display:grid;grid-template-columns:130px 1fr;gap:9px;padding:9px;border:1px solid #30342f;border-left:3px solid #736041;border-radius:9px;background:#0c0f0e;margin:6px 0}.log-entry.damage{border-left-color:#bd714e}.log-entry.heal{border-left-color:var(--green)}.log-entry.spirit{border-left-color:var(--violet)}.log-entry.fail{border-left-color:var(--red)}.log-entry.rest{border-left-color:var(--blue)}.log-entry.crit{border-left-color:#f3d071}.log-entry strong{color:#e8dfd1}.log-entry span{color:var(--muted)}.empty{text-align:center;padding:35px;border:1px dashed var(--line);border-radius:12px;color:var(--muted)}
+.ribbon{position:fixed;left:50%;top:max(8px,env(safe-area-inset-top));transform:translate(-50%,-150%);z-index:90;width:min(760px,calc(100% - 18px));display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:linear-gradient(100deg,#17312e,#44304f);border:1px solid var(--gold);border-radius:14px;padding:11px 12px;box-shadow:0 18px 55px #000c;opacity:0;pointer-events:none;transition:.28s}.ribbon.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}.ribbon b{color:#f3d99e}.ribbon span{white-space:pre-wrap}.ribbon button{border:0;background:transparent}.result-badge{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(10px,env(safe-area-inset-bottom));z-index:80;display:none;border:1px solid var(--gold);border-radius:999px;background:#201826;color:#ead8ef;padding:9px 13px;box-shadow:0 10px 28px #000b}.result-badge.show{display:block}
+.modal[hidden]{display:none}.modal{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:16px;background:#020303d5;backdrop-filter:blur(8px)}.modal-box{width:min(500px,100%);max-height:min(760px,92vh);overflow:auto;text-align:center;background:linear-gradient(150deg,#201a25,#0d100f);border:1px solid #806790;border-radius:20px;padding:19px;box-shadow:0 28px 90px #000}.modal-roll{font:900 clamp(2.5rem,10vw,4.8rem)/1 Georgia,serif;color:var(--gold);margin:9px}.modal-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}.modal-actions button{border-radius:11px;border:1px solid var(--line);background:#1a1e1b;font-weight:800}.modal-actions .yes{background:#244a35;border-color:#5f9874}.modal-actions .no{background:#492624;border-color:#9a5550}.modal-actions .cancel{background:#24231f}.fx{position:fixed;inset:0;z-index:85;pointer-events:none;opacity:0;overflow:hidden}.fx.play{animation:stage 1s ease-out}.fx.spirit{--fx:#ad80c7;background:radial-gradient(circle,#8d61a64d,transparent 57%)}.fx.psychic{--fx:#b57ad2;background:conic-gradient(from 90deg at 50% 50%,transparent,#8b52aa35,transparent,#bf8ad835,transparent)}.fx.physical{--fx:#e0c38a;background:radial-gradient(circle,#ebd49e36,transparent 48%)}.fx.heal{--fx:#70d090;background:radial-gradient(circle at 50% 60%,#5dc77c3d,transparent 55%)}.fx.fail{--fx:#d05350;background:linear-gradient(105deg,transparent 41%,#b3413e35 50%,transparent 59%)}.fx.crit{--fx:#ffe48c;background:radial-gradient(circle,#fff6ba88 0 4%,#a97cc14c 18%,transparent 55%)}.fx-label{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:900 clamp(1.7rem,7vw,4rem) Georgia,serif;letter-spacing:.1em;color:#fff0c6;text-shadow:0 0 25px var(--fx)}.particle{position:absolute;left:50%;top:50%;width:var(--s);height:var(--s);border-radius:50%;background:var(--fx);box-shadow:0 0 12px var(--fx);animation:fly var(--d) ease-out var(--delay) forwards}@keyframes stage{0%{opacity:0}14%{opacity:1}75%{opacity:.75}100%{opacity:0}}@keyframes fly{to{transform:translate(var(--x),var(--y)) scale(.08);opacity:0}}
+@media(max-width:767px){body{font-size:14px}.app{padding:7px 8px 110px}.top{display:block}.identity{border-radius:13px 13px 0 0;padding:12px}.identity h1{font-size:1.8rem}.identity p{font-size:.76rem}.motto{display:none}.dashboard{border-radius:0 0 13px 13px;grid-template-columns:repeat(4,1fr);padding:7px}.stat{padding:7px}.stat b{font-size:1rem}.hpstat{grid-column:1/-1;grid-row:auto}.dashboard .secondary{display:none}.turnbar{top:4px;margin:7px 0 5px;grid-template-columns:repeat(4,1fr);padding:5px}.turn-id{font-size:.72rem;padding:5px}.economy{font-size:.69rem;padding:5px 2px}.economy small{display:none}.damage-turn{font-size:.7rem;padding:5px}.next{grid-column:span 2}.rest{font-size:.72rem;padding:6px 3px}.statebar{position:sticky;top:112px;z-index:28;background:#090b0ae8;padding:4px 0}.nav{position:sticky;top:151px;z-index:27;background:#090b0af0;margin:0 -1px 8px;padding:5px 1px;backdrop-filter:blur(12px)}.nav button{padding:8px 11px}.grid{display:block}.panel{margin-bottom:8px;padding:11px}.panel.wide{margin-bottom:8px}.spell-grid,.tale-grid{grid-template-columns:1fr}.spell{padding:10px}.log-entry{grid-template-columns:1fr;gap:2px}.ribbon{grid-template-columns:1fr auto;padding:9px 10px}.ribbon b{grid-column:1}.ribbon span{font-size:.8rem;max-height:3.6em;overflow:auto}.result-badge{max-width:165px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.modal-actions{grid-template-columns:1fr}.modal-actions button{min-height:48px}.hp-tools{grid-template-columns:64px 1fr 1fr}}
+@media(min-width:768px) and (max-width:1100px){.dashboard{grid-template-columns:2fr repeat(4,1fr)}.panel{grid-column:span 6}.panel.wide{grid-column:span 12}.spell-grid{grid-template-columns:repeat(2,1fr)}.turnbar{grid-template-columns:auto repeat(4,1fr);top:6px}.damage-turn,.next,.rest{min-height:48px}.statebar{margin-top:7px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation-duration:.01ms!important;transition:none!important}.fx{display:none!important}}
 </style>
 </head>
 <body>
-<div class="wrap">
-<main class="shell" id="app">
-<header class="head">
-<h1>WONQ</h1>
-<div class="subtitle">Le Gardien des Absents • Hadozee • Barde 8 • Collège des Esprits</div>
-</header>
-<section class="grid stats">
-<div class="card center">CA<span class="big">13</span>
-</div>
-<div class="card center">PV<span id="hpView" class="big">59</span>
-</div>
-<div class="card center">Initiative<span class="big">+3</span>
-</div>
-<div class="card center">DD sorts<span class="big">16</span>
-</div>
-<div class="card center">Att. sort<span class="big">+8</span>
-</div>
-<div class="card center">Bâton<span class="big">+9</span>
-</div>
+<main class="app">
+<section class="top">
+  <header class="identity"><div class="eyebrow">Clifftop · Gardien des Absents</div><h1>WONQ</h1><p>Hadozee · Barde 8 · Collège des Esprits</p><p class="motto">« Un absent n’est pas un mort. »</p></header>
+  <section class="dashboard">
+    <div class="stat hpstat"><small>Points de vie</small><div class="hpgrid"><label><small>Actuels</small><input id="hp" class="number" type="number" min="0" max="59"></label><label><small>Temporaires</small><input id="thp" class="number" type="number" min="0"></label></div><div class="hp-tools"><input id="hpAmount" class="number" type="number" min="0" value="5"><button id="takeDamage">Dégâts</button><button id="takeHeal">Soins</button></div></div>
+    <div class="stat"><small>CA</small><b>13</b></div><div class="stat"><small>Initiative</small><b>+3</b></div><div class="stat"><small>Vitesse</small><b>9 m</b></div><div class="stat"><small>DD sorts</small><b>16</b></div><div class="stat"><small>Att. sort</small><b>+8</b></div><div class="stat secondary"><small>Maîtrise</small><b>+3</b></div><div class="stat secondary"><small>Perception</small><b>14</b></div>
+    <div class="stat"><small>Inspiration</small><b id="inspHead">5/5</b></div><div class="stat"><small>Conte</small><b id="taleHead">—</b></div><div class="stat secondary"><small>Esquive</small><b id="dodgeHead">3/3</b></div>
+  </section>
 </section>
-<section class="grid resources">
-<div class="card center">Inspiration<span id="inspView" class="big">5/5</span>
-</div>
-<div class="card center">Longue Mémoire<span id="memoryView" class="big">5/5</span>
-</div>
-<div class="card center">Bâton<span id="staffView" class="big">3/3</span>
-</div>
-<div class="card center">Esquive Hadozee<span id="dodgeView" class="big">3/3</span>
-</div>
-<div class="card center">PV actuels<div class="hp-controls">
-<button id="hpMinus">−</button>
-<input id="hpInput" type="number" min="0" max="59" value="59">
-<button id="hpPlus">+</button>
-</div>
-</div>
+<section class="turnbar" aria-label="Économie du tour">
+  <div class="turn-id"><b>Tour <span id="turn">1</span></b><br><small>Round <span id="round">1</span></small></div>
+  <button class="economy" data-econ="action"><b>Action</b><small>disponible</small></button><button class="economy" data-econ="bonus"><b>Bonus</b><small>disponible</small></button><button class="economy" data-econ="reaction"><b>Réaction</b><small>disponible</small></button><button class="economy" data-econ="move"><b>Mouvement</b><small>9 m</small></button>
+  <div class="damage-turn"><b><span id="turnDamage">0</span> dégâts</b><small>ce tour</small></div><button id="nextTurn" class="next">Tour suivant ›</button><button id="quickShort" class="rest">☕ Court</button><button id="quickLong" class="rest long">☾ Long</button>
 </section>
-<div class="turn-economy">
-<div class="turn-label"><b>Tour <span id="turnView">1</span></b></div>
-<div id="ecoAction" class="eco free"><b>⚔ Action</b>Disponible</div>
-<div id="ecoBonus" class="eco free"><b>✦ Bonus</b>Disponible</div>
-<div id="ecoReaction" class="eco free"><b>↯ Réaction</b>Disponible</div>
-<div id="ecoMove" class="eco free"><b>↝ Mouvement</b>9 m</div>
-<button id="newTurn" class="turn-next">Tour suivant ›</button>
-<button id="quickShortRest" class="quick-rest">☕ Court</button>
-<button id="quickLongRest" class="quick-rest long">☾ Long</button>
-</div>
-<div class="state-strip"><span id="concChip" class="state-chip">Concentration : aucune</span><span id="taleChip" class="state-chip">Conte : aucun</span></div>
-<nav class="tabs">
-<button class="tab active" data-tab="combat">⚔ Combat</button>
-<button class="tab" data-tab="spells">✦ Sorts</button>
-<button class="tab" data-tab="tales">☁ Contes</button>
-<button class="tab" data-tab="items">⌁ Objets</button>
-<button class="tab" data-tab="journal">☷ Journal</button>
-</nav>
-<section class="panel active" data-panel="combat">
-<div class="grid two">
-<article class="card">
-<div class="action-title">Bâton du Vagabond Gris</div>
-<div class="meta">Action • +9 pour toucher • CHA • allonge 4,5 m une fois par tour</div>
-<div class="attack-options">
-<button class="toggle rollmode on" data-mode="normal">Normal</button>
-<button class="toggle rollmode" data-mode="adv">Avantage</button>
-<button class="toggle rollmode" data-mode="dis">Désavantage</button>
-<label class="toggle">Jet manuel <input id="manualRoll" class="manual" type="number" min="1" max="20"></label>
-</div>
-<div class="row">
-<button class="main action-btn" id="staffOne">1 main</button>
-<button class="main action-btn" id="staffTwo">2 mains</button>
-</div>
-</article>
-<article class="card">
-<div class="action-title">Murmures dissonants</div>
-<div class="meta">Action • JS SAG DD16 • +1d6 du focaliseur spirituel</div>
-<div class="row">
-<button class="spirit action-btn" data-dissonant="1">N1</button>
-<button class="spirit action-btn" data-dissonant="2">N2</button>
-<button class="spirit action-btn" data-dissonant="3">N3</button>
-<button class="spirit action-btn" data-dissonant="4">N4</button>
-</div>
-</article>
-<article class="card">
-<div class="action-title">Mot de guérison</div>
-<div class="meta">Action bonus • +1d6 du focaliseur spirituel</div>
-<div class="row">
-<button class="heal bonus-btn" data-heal="1">N1</button>
-<button class="heal bonus-btn" data-heal="2">N2</button>
-<button class="heal bonus-btn" data-heal="3">N3</button>
-<button class="heal bonus-btn" data-heal="4">N4</button>
-</div>
-</article>
-<article class="card">
-<div class="action-title">Moquerie cruelle</div>
-<div class="meta">Action • JS SAG DD16 • 2d4 + 1d6 psychiques</div>
-<button class="spirit action-btn" id="mockery">Lancer</button>
-</article>
-<article class="card">
-<div class="action-title">Esquive Hadozee</div>
-<div class="meta">Réaction • réduit les dégâts de 1d6 + 3</div>
-<button class="reaction-btn" id="hadozeeDodge">Utiliser</button>
-</article>
-<article class="card">
-<div class="action-title">Injonction</div>
-<div class="meta">Action • JS SAG DD16 • sans concentration</div>
-<div class="row">
-<button class="action-btn" data-command="Approche">Approche</button>
-<button class="action-btn" data-command="Fuis">Fuis</button>
-<button class="action-btn" data-command="Lâche">Lâche</button>
-<button class="action-btn" data-command="À terre">À terre</button>
-<button class="action-btn" data-command="Halte">Halte</button>
-</div>
-</article>
-<article class="card">
-<div class="action-title">Inspiration bardique classique</div>
-<div class="meta">Action bonus • donne 1d8 à un allié • même réserve que Contes</div>
-<div class="row">
-<button class="main bonus-btn" id="giveInspiration">Donner 1d8</button>
-<button id="restoreInspiration">+1 manuellement</button>
-</div>
-</article>
-</div>
-</section>
-<section class="panel" data-panel="spells">
-<div class="card">
-<div class="action-title">Emplacements de sorts</div>
-<div id="slots">
-</div>
-</div>
-<div class="rule">La Longue Mémoire ajoute +1d6 selon la règle de votre table aux sorts concernés de Wonq.</div>
-<div class="grid two" style="margin-top:8px">
-<article class="card">
-<div class="action-title">Lueurs féeriques</div>
-<div class="meta">Action • N1 • concentration • JS DEX DD16</div>
-<button class="action-btn spell-action" data-spell="Lueurs féeriques" data-level="1" data-conc="1">Lancer</button>
-</article>
-<article class="card">
-<div class="action-title">Aide</div>
-<div class="meta">Action • N2+ • 3 créatures</div>
-<div class="row">
-<button class="action-btn" data-aid="2">N2</button>
-<button class="action-btn" data-aid="3">N3</button>
-<button class="action-btn" data-aid="4">N4</button>
-</div>
-</article>
-<article class="card">
-<div class="action-title">Invisibilité</div>
-<div class="meta">Action • N2 • concentration</div>
-<button class="action-btn spell-action" data-spell="Invisibilité" data-level="2" data-conc="1">Lancer</button>
-</article>
-<article class="card">
-<div class="action-title">Foulée brumeuse</div>
-<div class="meta">Action bonus • Faveur des fées • 1 gratuit/repos long</div>
-<div class="row">
-<button class="bonus-btn" id="mistyFree">Gratuit</button>
-<button class="bonus-btn" id="mistySlot">Slot N2</button>
-</div>
-</article>
-<article class="card">
-<div class="action-title">Motif hypnotique</div>
-<div class="meta">Action • N3 • concentration</div>
-<button class="action-btn spell-action" data-spell="Motif hypnotique" data-level="3" data-conc="1">Lancer</button>
-</article>
-<article class="card">
-<div class="action-title">Ralentissement</div>
-<div class="meta">Action • N3 • concentration</div>
-<button class="action-btn spell-action" data-spell="Ralentissement" data-level="3" data-conc="1">Lancer</button>
-</article>
-<article class="card">
-<div class="action-title">Dissipation de la magie</div>
-<div class="meta">Action • N3</div>
-<div class="row">
-<button class="action-btn" id="dispelAuto">N3 / auto</button>
-<button class="action-btn" id="dispelRoll">Test d20+5</button>
-</div>
-</article>
-<article class="card">
-<div class="action-title">Image majeure</div>
-<div class="meta">Action • N3 • concentration</div>
-<button class="action-btn spell-action" data-spell="Image majeure" data-level="3" data-conc="1">Lancer</button>
-</article>
-<article class="card">
-<div class="action-title">Porte dimensionnelle</div>
-<div class="meta">Action • N4</div>
-<button class="action-btn spell-action" data-spell="Porte dimensionnelle" data-level="4">Lancer</button>
-</article>
-<article class="card">
-<div class="action-title">Invisibilité supérieure</div>
-<div class="meta">Action • N4 • concentration</div>
-<button class="action-btn spell-action" data-spell="Invisibilité supérieure" data-level="4" data-conc="1">Lancer</button>
-</article>
-</div>
-</section>
-<section class="panel" data-panel="tales">
-<article class="card">
-<div class="action-title">Contes de l'Au-delà — d8</div>
-<div class="meta">Action bonus pour tirer le conte • Action pour le transmettre</div>
-<div class="row">
-<button class="spirit bonus-btn" id="taleRoll">Lancer 1d8</button>
-<button class="spirit bonus-btn" id="taleDouble">Une voix parmi plusieurs — 2d8</button>
-<button class="main action-btn" id="transmitTale">Transmettre le conte</button>
-</div>
-<div id="currentTale" style="margin-top:10px">
-</div>
-</article>
-<div class="grid tales" style="margin-top:8px">
-<article class="card">
-<b>1 — Marc Assin • La Bête</b>
-<div class="meta">Avantage Perception + attaques selon la condition du conte.</div>
-</article>
-<article class="card">
-<b>2 — Alain Proviste • Le Guerrier</b>
-<div class="meta">Attaque de sort mêlée +8 ;
- 2d8+5 force.</div>
-<button data-tale-effect="2">Résoudre</button>
-</article>
-<article class="card">
-<b>3 — Clam & Dya • Les Amis</b>
-<div class="meta">Deux créatures récupèrent chacune 1d8+5 PV.</div>
-<button data-tale-effect="3">Résoudre</button>
-</article>
-<article class="card">
-<b>4 — Jacques Mesrine • Le Fuyard</b>
-<div class="meta">Téléportation 9 m en réaction ;
- jusqu'à 5 autres créatures visibles peuvent suivre.</div>
-</article>
-<article class="card">
-<b>5 — Cid Action • Le Vengeur</b>
-<div class="meta">Réaction punitive : 1d8 force.</div>
-<button data-tale-effect="5">Jet 1d8</button>
-</article>
-<article class="card">
-<b>6 — Richard Cœur-de-Lion • Le Héros</b>
-<div class="meta">1d8+8 PV temporaires et +3 m vitesse.</div>
-<button data-tale-effect="6">Résoudre</button>
-</article>
-<article class="card">
-<b>7 — Fée Lation • La Fée</b>
-<div class="meta">JS SAG DD16 ;
- charmé et attaque la cible désignée.</div>
-</article>
-<article class="card">
-<b>8 — Paul Tergeist • Le Sombre Esprit</b>
-<div class="meta">Invisible ;
- si touche : +1d8 nécrotique + Effrayé.</div>
-<button data-tale-effect="8">Jet 1d8</button>
-</article>
-</div>
-</section>
-<section class="panel" data-panel="items">
-<div class="grid two">
-<article class="card">
-<div class="action-title">Cortège des absents</div>
-<div class="meta">2 charges • jusqu'à 3 silhouettes • 10 min</div>
-<button id="cortege">Dépenser 2 charges</button>
-</article>
-<article class="card">
-<div class="action-title">Yeux dans la brume</div>
-<div class="meta">Voir via une silhouette à 36 m ou moins.</div>
-<button id="eyes">Activer</button>
-</article>
-<article class="card">
-<div class="action-title">Chute de plume</div>
-<div class="meta">Réaction • Bâton • 1 charge</div>
-<button class="reaction-btn" id="feather">Lancer</button>
-</article>
-<article class="card">
-<div class="action-title">Bourrasque</div>
-<div class="meta">Action • Bâton • 2 charges • concentration</div>
-<button class="blue action-btn" id="gust">Lancer</button>
-</article>
-<article class="card">
-<div class="action-title">Planeur Hadozee</div>
-<div class="meta">Réaction en chute • plane jusqu'à 9 m horizontalement</div>
-<button class="reaction-btn" id="glide">Déployer</button>
-</article>
-<article class="card">
-<div class="action-title">Séance de spiritisme</div>
-<div class="meta">Hors économie d’un tour de combat • 1 h</div>
-<div class="row">
-<button data-session="Parler avec les morts">Parler avec les morts</button>
-<button data-session="Clairvoyance">Clairvoyance</button>
-<button data-session="Revivification">Revivification</button>
-<button data-session="Cécité/Surdité">Cécité/Surdité</button>
-</div>
-</article>
-</div>
-</section>
-<section class="panel" data-panel="journal">
-<article class="card">
-<div class="journal-head"><div><div class="action-title">Journal de combat</div><div class="meta">Chronologie complète et persistante de la session.</div></div><div class="journal-tools"><input id="historySearch" type="search" placeholder="Rechercher…"><button id="clearLog" class="utility-danger">Effacer</button></div></div>
-<div class="timeline" id="historyTimeline"></div>
-</article>
-</section>
-<div class="utility-bar">
-<div class="utility-group utility-rest">
-<button id="shortRest">☕ Repos court</button>
-<button id="longRest">🌙 Repos long</button>
-<button id="dawn">🌅 Aube</button>
-<button id="newCombat">⚔ Nouveau combat</button>
-</div>
-<div class="utility-group utility-tools">
-<button id="undoLast">↶ Annuler</button>
-<button id="toggleHistory">Ouvrir le Journal</button>
-<button id="resetSave" class="utility-danger">Effacer sauvegarde</button>
-</div>
-</div>
-<div id="saveStatus" class="save-status">Sauvegarde locale automatique active.</div>
-<div id="wonq-sticky-result" aria-live="polite" role="status">
-<div class="title">Dernier résultat</div>
-<div id="lastResult" class="body">Prêt. Que les absents parlent.</div>
-<button id="closeRibbon" class="ribbon-close" aria-label="Réduire">⌄</button>
-</div>
-<button id="resultBadge" class="result-badge">☷ Dernier résultat</button>
-</main>
-</div>
-<div class="fx-stage" id="fxStage"><div class="fx-label" id="fxLabel"></div><div id="fxOrbs"></div></div>
-<div class="hit-modal" id="hitModal" hidden role="dialog" aria-modal="true"><div class="hit-box"><div class="action-title" id="hitName">Jet d’attaque</div><div class="hit-roll" id="hitTotal">—</div><div class="meta" id="hitDetail"></div><h3>Est-ce que l’attaque touche ?</h3><div class="hit-actions"><button id="hitNo" class="hit-no">Non, raté</button><button id="hitYes" class="hit-yes">Oui, touché</button></div></div></div>
-<script>
-(()=>{const root=document.getElementById('app'),q=s=>root.querySelector(s),qa=s=>[...root.querySelectorAll(s)];
-const tales=['','Marc Assin — La Bête','Alain Proviste — Le Guerrier','Clam & Dya — Les Amis','Jacques Mesrine — Le Fuyard','Cid Action — Le Vengeur','Richard Cœur-de-Lion — Le Héros','Fée Lation — La Fée','Paul Tergeist — Le Sombre Esprit'];
-const S={hp:59,maxHp:59,insp:5,memory:5,staff:3,dodge:3,voice:true,mistyFree:true,slots:{1:4,2:3,3:3,4:2},turn:1,actionUsed:false,actionLabel:'',bonusUsed:false,bonusLabel:'',reactionUsed:false,reactionLabel:'',moveUsed:false,bonusSpell:false,actionSpell:false,concentration:false,currentTale:'',journal:[]};
-const undo=[];
-const SAVE='wonq-combat-v5-preview';
-let rollMode='normal',pendingAttack=null;
-const d=n=>Math.floor(Math.random()*n)+1;
-function roll(n,s,m=0){let a=[],t=m;
-for(let i=0;
-i<n;
-i++){const v=d(s);
-a.push(v);
-t+=v}return{dice:a,total:t}}function snap(){return JSON.parse(JSON.stringify(S))}function push(){undo.push(snap());
-if(undo.length>30)undo.shift()}function save(){localStorage.setItem(SAVE,JSON.stringify(S));
-q('#saveStatus').textContent='Sauvegarde locale : état enregistré automatiquement.'}function load(){try{const x=JSON.parse(localStorage.getItem(SAVE)||'null');
-if(x)Object.assign(S,x)}catch(e){}}let timer=null;
-function ribbon(msg){q('#lastResult').textContent=msg;
-q('#resultBadge').classList.remove('show');q('#wonq-sticky-result').classList.add('show');
-clearTimeout(timer);
-timer=setTimeout(collapseRibbon,4500)}function collapseRibbon(){q('#wonq-sticky-result').classList.remove('show');q('#resultBadge').classList.add('show')}function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function playFX(type,label){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;const stage=document.querySelector('#fxStage'),box=document.querySelector('#fxOrbs');stage.className='fx-stage';box.innerHTML='';q('#fxLabel').textContent=label||'';for(let i=0;i<22;i++){const p=document.createElement('i'),a=Math.random()*Math.PI*2,dist=90+Math.random()*Math.min(innerWidth,460)*.5;p.className='fx-orb';p.style.cssText=`--x:${Math.cos(a)*dist}px;--y:${Math.sin(a)*dist}px;--s:${5+Math.random()*12}px`;box.appendChild(p)}void stage.offsetWidth;stage.className='fx-stage '+type+' play';setTimeout(()=>{stage.className='fx-stage';box.innerHTML=''},950)}function log(msg,type=''){S.journal=Array.isArray(S.journal)?S.journal:[];S.journal.push({turn:S.turn,msg,time:new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}),type});if(S.journal.length>150)S.journal.shift();
-ribbon(msg);if(type)playFX(type,type==='crit'?'CRITIQUE':type==='fail'?'RATÉ':type==='heal'?'SOINS':'ESPRITS');
-save();renderHistory()}function renderHistory(){const box=q('#historyTimeline');if(!box)return;const term=(q('#historySearch')?.value||'').toLowerCase(),items=(S.journal||[]).filter(e=>e.msg.toLowerCase().includes(term));if(!items.length){box.innerHTML='<div class="history-empty">Aucune action consignée.</div>';return}const groups={};items.forEach(e=>(groups[e.turn]??=[]).push(e));box.innerHTML=Object.keys(groups).sort((a,b)=>b-a).map(t=>`<section class="turn-group"><h3>Tour ${t}</h3>${groups[t].slice().reverse().map(e=>`<div class="history-entry ${esc(e.type||'')}"><strong>${esc(e.time)} · ${esc(e.msg.split('\n')[0])}</strong><span>${esc(e.msg.replace('\n',' · '))}</span></div>`).join('')}</section>`).join('')}function resetEconomy(){S.actionUsed=false;
-S.actionLabel='';
-S.bonusUsed=false;
-S.bonusLabel='';
-S.reactionUsed=false;
-S.reactionLabel='';
-S.moveUsed=false;
-S.bonusSpell=false;
-S.actionSpell=false}function useAction(label,isSpell=false,isCantrip=false){if(S.actionUsed)return log('❌ Action déjà utilisée : '+S.actionLabel),false;
-if(S.bonusSpell&&isSpell&&!isCantrip)return log('❌ Après un sort en action bonus, seule une incantation mineure d’1 action reste possible.'),false;
-S.actionUsed=true;
-S.actionLabel=label;
-S.actionSpell=isSpell&&!isCantrip;
-return true}function useBonus(label,isSpell=false){if(S.bonusUsed)return log('❌ Action bonus déjà utilisée : '+S.bonusLabel),false;
-if(isSpell&&S.actionSpell)return log('❌ Un sort de niveau a déjà été lancé avec l’Action ce tour.'),false;
-S.bonusUsed=true;
-S.bonusLabel=label;
-S.bonusSpell=isSpell;
-return true}function useReaction(label){if(S.reactionUsed)return log('❌ Réaction déjà utilisée : '+S.reactionLabel),false;
-S.reactionUsed=true;
-S.reactionLabel=label;
-return true}function useSlot(l){if(S.slots[l]<1)return log('❌ Aucun emplacement N'+l+' restant.'),false;
-S.slots[l]--;
-return true}function renderSlots(){const b=q('#slots');
-b.innerHTML='';
-[1,2,3,4].forEach(l=>{const r=document.createElement('div');
-r.className='slotrow';
-r.innerHTML='<span style="width:30px;color:var(--gold)">N'+l+'</span>';
-const mx=[4,3,3,2][l-1];
-for(let i=0;
-i<mx;
-i++){const p=document.createElement('button');
-p.className='pip '+(i<S.slots[l]?'':'off');
-p.onclick=()=>{S.slots[l]=(i+1===S.slots[l]?i:i+1);
-render();
-save()};
-r.appendChild(p)}b.appendChild(r)})}function d20(){const a=d(20),b=d(20);return rollMode==='adv'?Math.max(a,b):rollMode==='dis'?Math.min(a,b):a}function startAttack(data,spendAction=true){push();if(spendAction&&!useAction(data.name))return render();const manual=parseInt(q('#manualRoll').value),natural=Number.isFinite(manual)?Math.max(1,Math.min(20,manual)):d20();log(`${data.icon} ${data.name} · jet d’attaque ${natural}+${data.bonus} = ${natural+data.bonus} · en attente de confirmation`);if(natural===1)return resolveAutomaticMiss(data,natural);if(natural===20)return resolveDamage(data,natural,true);pendingAttack={data,natural};q('#hitName').textContent=data.name;q('#hitTotal').textContent=natural+data.bonus;q('#hitDetail').textContent=`d20 : ${natural} + bonus ${data.bonus}`;q('#hitModal').hidden=false;q('#hitYes').focus();render()}function resolveAutomaticMiss(data,natural){pendingAttack=null;q('#hitModal').hidden=true;log(`${data.icon} ${data.name} · 1 naturel · échec critique · aucun dégât`,'fail');render()}function resolveDamage(data,natural,crit=false){const dice=roll(data.n*(crit?2:1),data.s,data.mod);pendingAttack=null;q('#hitModal').hidden=true;log(`${data.icon} ${data.name} · ${crit?'20 naturel · critique':'touche confirmée'}\nDégâts : ${dice.dice.join('+')} + ${data.mod} = ${dice.total} ${data.type}`,crit?'crit':'hit');render()}function confirmHit(hit){if(!pendingAttack)return;const {data,natural}=pendingAttack;if(hit)resolveDamage(data,natural,false);else{pendingAttack=null;q('#hitModal').hidden=true;log(`${data.icon} ${data.name} · ${natural}+${data.bonus} = ${natural+data.bonus} · attaque ratée · aucun dégât`,'fail');render()}}function render(){q('#hpView').textContent=S.hp;
-q('#hpInput').value=S.hp;
-q('#inspView').textContent=S.insp+'/5';
-q('#memoryView').textContent=S.memory+'/5';
-q('#staffView').textContent=S.staff+'/3';
-q('#dodgeView').textContent=S.dodge+'/3';
-q('#turnView').textContent=S.turn;
-[['#ecoAction',S.actionUsed,S.actionLabel],['#ecoBonus',S.bonusUsed,S.bonusLabel],['#ecoReaction',S.reactionUsed,S.reactionLabel]].forEach(([id,u,l])=>{const e=q(id);
-const title=e.querySelector('b').outerHTML;
-e.innerHTML=title+(u?(l||'Utilisée'):'Disponible');
-e.className='eco '+(u?'used':'free')});
-q('#ecoMove').className='eco '+(S.moveUsed?'used':'free');q('#ecoMove').innerHTML='<b>↝ Mouvement</b>'+(S.moveUsed?'Utilisé':'9 m');q('#concChip').textContent='Concentration : '+(S.concentration||'aucune');q('#concChip').classList.toggle('active',!!S.concentration);q('#taleChip').textContent='Conte : '+(S.currentTale?'mémorisé':'aucun');q('#taleChip').classList.toggle('active',!!S.currentTale);
-qa('.action-btn').forEach(x=>x.disabled=S.actionUsed);
-qa('.bonus-btn').forEach(x=>x.disabled=S.bonusUsed);
-qa('.reaction-btn').forEach(x=>x.disabled=S.reactionUsed);
-renderSlots();
-q('#currentTale').innerHTML=S.currentTale||'';renderHistory()}qa('.tab').forEach(b=>b.onclick=()=>{qa('.tab').forEach(x=>x.classList.remove('active'));
-b.classList.add('active');
-qa('.panel').forEach(p=>p.classList.toggle('active',p.dataset.panel===b.dataset.tab))});
-q('#newTurn').onclick=()=>{push();
-S.turn++;
-resetEconomy();
-render();
-log('↻ Tour '+S.turn+' : action, action bonus, réaction et mouvement restaurés.')};
-q('#staffOne').onclick=()=>startAttack({name:'Bâton · 1 main',icon:'🦯',bonus:9,n:1,s:6,mod:6,type:'contondants'});
-q('#staffTwo').onclick=()=>startAttack({name:'Bâton · 2 mains',icon:'🦯',bonus:9,n:1,s:8,mod:6,type:'contondants'});
-q('#mockery').onclick=()=>{if(!useAction('Moquerie cruelle',false,true))return render();
-const a=roll(2,4),f=d(6);
-render();
-log(`🗣 Moquerie cruelle — JS SAG DD16\nTOTAL : ${a.total+f} psychiques`)};
-qa('[data-dissonant]').forEach(b=>b.onclick=()=>{const l=+b.dataset.dissonant;
-if(!useAction('Murmures dissonants',true))return render();
-if(!useSlot(l)){S.actionUsed=false;
-return render()}const a=roll(l+2,6),f=d(6);
-render();
-log(`👻 Murmures dissonants N${l} — TOTAL ${a.total+f} psychiques sur échec`)});
-qa('[data-heal]').forEach(b=>b.onclick=()=>{const l=+b.dataset.heal;
-if(!useBonus('Mot de guérison',true))return render();
-if(!useSlot(l)){S.bonusUsed=false;
-S.bonusSpell=false;
-return render()}const a=roll(l,4,5),f=d(6);
-render();
-log(`❤️ Mot de guérison N${l} — ${a.total+f} PV restaurés`)});
-q('#hadozeeDodge').onclick=()=>{if(S.dodge<1)return log('❌ Plus d’Esquive Hadozee.');
-if(!useReaction('Esquive Hadozee'))return render();
-push();
-S.dodge--;
-const x=d(6)+3;
-render();
-log(`🛡 Esquive Hadozee : réduction de ${x} dégâts.`)};
-qa('[data-command]').forEach(b=>b.onclick=()=>{if(!useAction('Injonction'))return render();
-render();
-log(`⚖ Injonction : ${b.dataset.command} • JS SAG DD16.`)});
-q('#giveInspiration').onclick=()=>{if(S.insp<1)return log('❌ Plus d’Inspiration bardique.');
-if(!useBonus('Inspiration bardique'))return render();
-S.insp--;
-render();
-log('🎵 Inspiration bardique donnée : 1d8.')};
-q('#restoreInspiration').onclick=()=>{S.insp=Math.min(5,S.insp+1);
-render();
-save()};
-qa('[data-spell]').forEach(b=>b.onclick=()=>{const l=+b.dataset.level;
-if(!useAction(b.dataset.spell,true))return render();
-if(!useSlot(l)){S.actionUsed=false;
-S.actionSpell=false;
-return render()}if(b.dataset.conc){if(S.concentration&&!confirm(`Remplacer la concentration sur « ${S.concentration} » ?`)){S.slots[l]++;S.actionUsed=false;S.actionSpell=false;return render()}S.concentration=b.dataset.spell}
-render();
-log(`✨ ${b.dataset.spell} lancé avec un emplacement N${l}.${b.dataset.conc?' · concentration active':''}`,'spirit')});
-qa('[data-aid]').forEach(b=>b.onclick=()=>{const l=+b.dataset.aid;
-if(!useAction('Aide',true))return render();
-if(!useSlot(l)){S.actionUsed=false;
-S.actionSpell=false;
-return render()}render();
-log(`✨ Aide N${l} : 3 créatures gagnent +${5*(l-1)} PV actuels et maximum.`)});
-q('#mistyFree').onclick=()=>{if(!S.mistyFree)return log('❌ Lancement gratuit déjà utilisé.');
-if(!useBonus('Foulée brumeuse',true))return render();
-S.mistyFree=false;
-render();
-log('🌫 Foulée brumeuse gratuite lancée.')};
-q('#mistySlot').onclick=()=>{if(!useBonus('Foulée brumeuse',true))return render();
-if(!useSlot(2)){S.bonusUsed=false;
-S.bonusSpell=false;
-return render()}render();
-log('🌫 Foulée brumeuse lancée avec un slot N2.')};
-q('#dispelAuto').onclick=()=>{if(!useAction('Dissipation de la magie',true))return render();
-if(!useSlot(3)){S.actionUsed=false;
-S.actionSpell=false;
-return render()}render();
-log('✨ Dissipation N3 : sort N3 ou inférieur dissipé automatiquement.')};
-q('#dispelRoll').onclick=()=>{if(!useAction('Dissipation de la magie',true))return render();
-if(!useSlot(3)){S.actionUsed=false;
-S.actionSpell=false;
-return render()}const x=d(20)+5;
-render();
-log(`✨ Dissipation : test de CHA ${x}.`)};
-q('#taleRoll').onclick=()=>{if(S.insp<1)return log('❌ Plus d’Inspiration.');
-if(!useBonus('Tirer un conte'))return render();
-S.insp--;
-const n=d(8);
-S.currentTale=`<span class="badge">Conte mémorisé</span> <b>${n} — ${tales[n]}</b>`;
-render();
-log(`📖 Conte d8 = ${n} • ${tales[n]}`)};
-q('#taleDouble').onclick=()=>{if(!S.voice)return log('❌ Une voix parmi plusieurs déjà utilisée.');
-if(S.insp<1)return log('❌ Plus d’Inspiration.');
-if(!useBonus('Tirer 2 contes'))return render();
-S.insp--;
-S.voice=false;
-const a=d(8),b=d(8);
-S.currentTale=`<span class="badge">Choisis</span> <b>${a} — ${tales[a]}</b> OU <b>${b} — ${tales[b]}</b>`;
-render();
-log(`📖 Deux contes : ${a} ou ${b}.`)};
-q('#transmitTale').onclick=()=>{if(!S.currentTale)return log('❌ Aucun conte mémorisé.');
-if(!useAction('Transmettre le conte'))return render();
-S.currentTale='';
-render();
-log('☁ Conte transmis : applique son effet à la cible. Le conte mémorisé est consommé.','spirit')};
-qa('[data-tale-effect]').forEach(b=>b.onclick=()=>{const n=+b.dataset.taleEffect;
-if(n===2)startAttack({name:'Alain Proviste · Le Guerrier',icon:'⚔',bonus:8,n:2,s:8,mod:5,type:'force'},false);
-if(n===3)log(`🤝 Clam & Dya : ${d(8)+5} PV à chacune des deux cibles.`);
-if(n===5)log(`🩸 Cid Action : ${d(8)} force.`);
-if(n===6)log(`🦁 Richard : ${d(8)+8} PV temporaires.`);
-if(n===8)log(`👻 Paul Tergeist : +${d(8)} nécrotique.`)});
-q('#cortege').onclick=()=>{if(S.memory<2)return log('❌ Pas assez de charges.');
-S.memory-=2;
-render();
-log('☁ Cortège des absents activé.')};
-q('#eyes').onclick=()=>log('👁 Yeux dans la brume activé.');
-q('#feather').onclick=()=>{if(S.staff<1)return log('❌ Pas assez de charges du Bâton.');
-if(!useReaction('Chute de plume'))return render();
-S.staff--;
-render();
-log('🪶 Chute de plume lancée.')};
-q('#gust').onclick=()=>{if(S.staff<2)return log('❌ Pas assez de charges du Bâton.');
-if(!useAction('Bourrasque',true))return render();
-S.staff-=2;
-S.concentration='Bourrasque';
-render();
-log('💨 Bourrasque lancée • concentration.','spirit')};
-q('#glide').onclick=()=>{if(!useReaction('Planeur Hadozee'))return render();
-render();
-log('🪽 Planeur Hadozee déployé.')};
-qa('[data-session]').forEach(b=>b.onclick=()=>log(`🔮 Séance : ${b.dataset.session}.`));
-q('#shortRest').onclick=()=>{if(!confirm('Appliquer un repos court ? Inspiration et économie du tour seront restaurées.'))return;push();S.insp=5;S.currentTale='';
-resetEconomy();
-render();
-log('☕ Repos court : Inspiration restaurée à 5/5, conte mémorisé dissipé et économie du tour réinitialisée.')};
-q('#longRest').onclick=()=>{if(!confirm('Appliquer un repos long et restaurer toutes les ressources concernées ?'))return;push();Object.assign(S,{hp:59,insp:5,dodge:3,voice:true,mistyFree:true,slots:{1:4,2:3,3:3,4:2},concentration:false,currentTale:''});
-resetEconomy();
-render();
-log('🌙 Repos long : PV, Inspiration, Esquive Hadozee, Foulée féerique, Une voix parmi plusieurs et emplacements restaurés. Concentration et conte supprimés.')};
-q('#dawn').onclick=()=>{const m=d(4)+1,s=d(3);
-S.memory=Math.min(5,S.memory+m);
-S.staff=Math.min(3,S.staff+s);
-render();
-log(`🌅 Aube : Longue Mémoire +${m} • Bâton +${s}.`)};
-q('#newCombat').onclick=()=>{if(!confirm('Commencer un nouveau combat ? Les ressources, le conte et la concentration seront conservés.'))return;push();S.turn=1;
-resetEconomy();
-render();
-log('⚔ Nouveau combat : économie du tour réinitialisée ; ressources, concentration et conte conservés.')};
-q('#hpMinus').onclick=()=>{S.hp=Math.max(0,S.hp-1);
-render();
-save()};
-q('#hpPlus').onclick=()=>{S.hp=Math.min(59,S.hp+1);
-render();
-save()};
-q('#hpInput').onchange=()=>{S.hp=Math.max(0,Math.min(59,+q('#hpInput').value||0));
-render();
-save()};
-q('#undoLast').onclick=()=>{const x=undo.pop();
-if(!x)return log('ℹ️ Rien à annuler.');
-Object.assign(S,x);
-render();
-log('↶ Dernière modification annulée.')};
-q('#toggleHistory').onclick=()=>{q('[data-tab="journal"]').click()};
-q('#resetSave').onclick=()=>{if(!confirm('Réinitialiser toute la session, y compris le journal ?'))return;localStorage.removeItem(SAVE);Object.assign(S,{hp:59,maxHp:59,insp:5,memory:5,staff:3,dodge:3,voice:true,mistyFree:true,slots:{1:4,2:3,3:3,4:2},turn:1,actionUsed:false,actionLabel:'',bonusUsed:false,bonusLabel:'',reactionUsed:false,reactionLabel:'',moveUsed:false,bonusSpell:false,actionSpell:false,concentration:false,currentTale:'',journal:[]});undo.length=0;render();q('#lastResult').textContent='Session réinitialisée.';ribbon('🗑 Session entièrement réinitialisée.');save()};
-q('#clearLog').onclick=()=>{if(!confirm('Effacer définitivement le journal de combat ?'))return;S.journal=[];save();renderHistory();q('#lastResult').textContent='Journal effacé.'};
-q('#closeRibbon').onclick=collapseRibbon;q('#resultBadge').onclick=()=>{q('#resultBadge').classList.remove('show');q('#wonq-sticky-result').classList.add('show');clearTimeout(timer)};q('#hitYes').onclick=()=>confirmHit(true);q('#hitNo').onclick=()=>confirmHit(false);q('#ecoMove').onclick=()=>{push();S.moveUsed=!S.moveUsed;log(S.moveUsed?'↝ Mouvement marqué comme utilisé.':'↝ Mouvement rendu disponible.')};q('#concChip').onclick=()=>{if(!S.concentration)return;push();const old=S.concentration;S.concentration=false;log(`◇ Concentration interrompue : ${old}.`)};qa('.rollmode').forEach(b=>b.onclick=()=>{rollMode=b.dataset.mode;qa('.rollmode').forEach(x=>x.classList.toggle('on',x===b))});q('#quickShortRest').onclick=()=>q('#shortRest').click();q('#quickLongRest').onclick=()=>q('#longRest').click();q('#historySearch').oninput=renderHistory;
-load();
-S.journal=Array.isArray(S.journal)?S.journal:[];
-render();
-})();
+<div class="statebar"><button id="concState" class="state clickable">Concentration : aucune</button><span id="taleState" class="state">Conte : aucun</span><span id="cortegeState" class="state">Cortège : inactif</span></div>
+<nav class="nav" aria-label="Sections"><button class="active" data-view="combat">Combat</button><button data-view="spells">Sorts</button><button data-view="tales">Contes</button><button data-view="defense">Défenses</button><button data-view="resources">Ressources</button><button data-view="journal">Journal</button><button data-view="rules">Règles</button></nav>
 
+<section class="view active" id="combat"><div class="grid">
+  <article class="panel wide signature"><div class="eyebrow">Action signature · contrôle psychique</div><h2>Murmures dissonants</h2><div class="meta">18 m · JdS Sagesse DD 16 · 3d6 psychiques au N1, +1d6/niveau · moitié sur réussite · fuite en réaction sur échec.</div><div class="badges"><span class="badge">Longue Mémoire +1d6</span><span class="badge">Emplacement requis</span></div><div class="row" id="dissonantButtons"></div></article>
+  <article class="panel"><div class="eyebrow">Tour de magie · contrôle</div><h2>Moquerie cruelle</h2><div class="meta">18 m · JdS Sagesse DD 16 · échec : 2d4 + 1d6 psychiques et désavantage à la prochaine attaque.</div><button class="primary" id="mockery">Lancer</button></article>
+  <article class="panel"><div class="eyebrow">Action bonus · soutien</div><h2>Mot de guérison</h2><div class="meta">18 m · 1d4 + 5, +1d6 via la Longue Mémoire · ne modifie pas automatiquement les PV de Wonq.</div><div class="row" id="healingButtons"></div></article>
+  <article class="panel"><div class="eyebrow">Action bonus · 18 m</div><h2>Inspiration bardique</h2><div class="meta">Donne 1d8 à un allié · même réserve que les Contes.</div><button class="primary teal" id="giveInspiration">Donner 1d8</button></article>
+  <article class="panel"><div class="eyebrow">Faveur des fées · action</div><h2>Injonction</h2><div class="meta">JdS Sagesse DD 16 · lancement gratuit 1/repos long ou emplacement N1.</div><select id="commandWord" class="number"><option>Approche</option><option>Fuis</option><option>Lâche</option><option>À terre</option><option>Halte</option></select><div class="row"><button class="ability" id="commandFree">Gratuit</button><button class="ability" id="commandSlot">Slot N1</button></div></article>
+  <article class="panel wide"><div class="resource-head"><div><div class="eyebrow">Armes de secours</div><h2>Bâton & Dague</h2></div><div class="attack-total">Jet → confirmation → dégâts</div></div><div class="options"><button class="toggle rollmode on" data-mode="normal">Normal</button><button class="toggle rollmode" data-mode="adv">Avantage</button><button class="toggle rollmode" data-mode="dis">Désavantage</button><label class="toggle">Jet manuel <input id="manualRoll" class="number" type="number" min="1" max="20" style="width:58px"></label></div><div class="row"><button class="ability weapon" data-weapon="staff1">Bâton 1 main · +2 · 1d6−1</button><button class="ability weapon" data-weapon="staff2">Bâton 2 mains · +2 · 1d8−1</button><button class="ability weapon" data-weapon="dagger">Dague · +5 · 1d4+2</button></div></article>
+  <article class="panel"><h2>Ouverture conseillée</h2><div class="sequence"><div class="step"><b>1 · Entraver</b><div class="meta">Motif hypnotique, Lueurs féeriques ou Suggestion.</div></div><div class="step"><b>2 · Désorganiser</b><div class="meta">Murmures dissonants ou Moquerie cruelle.</div></div><div class="step"><b>3 · Sauver</b><div class="meta">Mot de guérison, Porte dimensionnelle ou Conte préparé.</div></div></div></article>
+  <article class="panel"><h2>Accès rapide</h2><div class="sequence"><button class="ability" id="quickTale">Tirer un Conte · bonus</button><button class="ability" id="quickDodge">Esquive Hadozee · réaction</button><button class="ability" id="quickMisty">Foulée brumeuse · bonus</button><button class="ability" id="undo">↶ Annuler la dernière opération</button></div></article>
+</div></section>
+
+<section class="view" id="spells"><div class="grid"><article class="panel full"><div class="resource-head"><div><h2>Emplacements de sorts</h2><div class="meta">Récupération au repos long.</div></div><div id="slotDots"></div></div></article><article class="panel full"><div class="spell-groups" id="spellGroups"></div></article></div></section>
+
+<section class="view" id="tales"><div class="grid"><article class="panel full signature"><div class="resource-head"><div><div class="eyebrow">Collège des Esprits</div><h2>Contes de l’Au-delà · d8</h2><div class="meta">Action bonus + 1 Inspiration pour tirer. Le conte reste mémorisé jusqu’à ce qu’il soit offert par une action à une cible à 9 m, ou jusqu’au repos court/long.</div></div><div class="counter" id="currentTale">Aucun</div></div><div class="row"><button class="primary" id="drawTale">Tirer 1d8</button><button class="ability" id="drawTwo">Une voix parmi plusieurs · 2d8</button><button class="ability" id="offerTale">Offrir le conte · action</button></div></article><article class="panel full"><div class="tale-grid" id="taleGrid"></div></article></div></section>
+
+<section class="view" id="defense"><div class="grid">
+  <article class="panel"><h2>Esquive Hadozee</h2><div class="meta">Réaction quand Wonq subit des dégâts · réduit de 1d6+3 · 3 utilisations/repos long.</div><button class="primary teal" id="hadozeeDodge">Réduire les dégâts</button></article>
+  <article class="panel"><h2>Planeur</h2><div class="meta">Réaction après une chute d’au moins 3 m · jusqu’à 9 m horizontalement · aucun dégât de chute.</div><button class="ability" id="glide">Déployer</button></article>
+  <article class="panel"><h2>Concentration</h2><div class="meta">Après des dégâts : JdS Constitution, DD max(10, ⌊dégâts/2⌋). Bonus de Wonq : +2.</div><div class="row"><input id="concDamage" class="number" type="number" min="0" value="20" style="width:90px"><button class="ability" id="concCheck">Calculer le DD</button></div><div id="concResult" class="warn">Aucune concentration active.</div></article>
+  <article class="panel"><h2>Jets de sauvegarde</h2><div class="badges"><span class="badge">FOR −1</span><span class="badge">DEX +5</span><span class="badge">CON +2</span><span class="badge">INT +0</span><span class="badge">SAG +1</span><span class="badge">CHA +8</span></div></article>
+  <article class="panel wide"><h2>Contrôles et états</h2><div class="row"><button class="toggle condition" data-condition="Invisible">Invisible</button><button class="toggle condition" data-condition="Guidance">Guidance</button><button class="toggle condition" data-condition="Cortège actif">Cortège actif</button><button class="toggle condition" data-condition="Contre-charme">Contre-charme</button></div><div class="meta">Ces boutons sont des marqueurs manuels. Leur activation et leur suppression sont consignées.</div></article>
+</div></section>
+
+<section class="view" id="resources"><div class="grid">
+  <article class="panel"><div class="resource-head"><div><h2>Inspiration bardique</h2><div class="meta">d8 · repos court/long</div></div><div class="counter" id="inspCount"></div></div><div class="row"><button class="ability adjust" data-key="insp" data-delta="-1">−</button><button class="ability adjust" data-key="insp" data-delta="1">+</button></div></article>
+  <article class="panel"><div class="resource-head"><div><h2>Esquive Hadozee</h2><div class="meta">repos long</div></div><div class="counter" id="dodgeCount"></div></div><div class="row"><button class="ability adjust" data-key="dodge" data-delta="-1">−</button><button class="ability adjust" data-key="dodge" data-delta="1">+</button></div></article>
+  <article class="panel"><div class="resource-head"><div><h2>Foulée féerique</h2><div class="meta">1 lancement gratuit/repos long</div></div><div class="counter" id="mistyCount"></div></div></article>
+  <article class="panel"><div class="resource-head"><div><h2>Injonction féerique</h2><div class="meta">1 lancement gratuit/repos long</div></div><div class="counter" id="commandCount"></div></div></article>
+  <article class="panel"><div class="resource-head"><div><h2>Cortège des absents</h2><div class="meta">Objet personnalisé · coût 2 charges · jusqu’à 3 silhouettes · 10 min.</div></div><div class="counter" id="memoryCount"></div></div><div class="row"><button class="primary" id="activateCortege">Activer · 2 charges</button><button class="ability adjust" data-key="memory" data-delta="-1">−</button><button class="ability adjust" data-key="memory" data-delta="1">+</button></div></article>
+  <article class="panel"><h2>Aube</h2><div class="meta">Ancienne règle de l’objet personnalisée conservée : la Longue Mémoire récupère 1d4+1 charges, maximum 5.</div><button class="ability" id="dawn">Appliquer l’aube</button></article>
+  <article class="panel"><h2>Foulée brumeuse</h2><div class="meta">Action bonus · 9 m · lancement gratuit ou emplacement N2.</div><div class="row"><button class="ability" id="mistyFree">Gratuit</button><button class="ability" id="mistySlot">Emplacement N2</button></div></article>
+  <article class="panel wide"><h2>Séance de spiritisme</h2><div class="meta">Rituel 1 h avec jusqu’à 3 créatures · apprend jusqu’au prochain repos long un sort de Divination ou Nécromancie d’un niveau au plus égal au nombre de participants, et que Wonq peut lancer.</div><div class="row"><input id="sessionSpell" class="number" placeholder="Sort retenu" style="max-width:260px"><button class="ability" id="saveSessionSpell">Mémoriser jusqu’au repos long</button></div><div id="sessionState" class="warn">Aucun sort de séance mémorisé.</div></article>
+  <article class="panel full"><div class="row"><button class="ability" id="newCombat">Nouveau combat</button><button class="ability" id="shortRest">Repos court</button><button class="ability" id="longRest">Repos long</button><button class="ability" id="undo2">↶ Annuler</button><button class="ability" id="resetAll">Réinitialisation complète</button></div></article>
+</div></section>
+
+<section class="view" id="journal"><div class="grid"><article class="panel full"><div class="journal-head"><div><div class="eyebrow">Chronologie persistante</div><h2>Journal</h2></div><div class="journal-tools"><input id="journalSearch" type="search" placeholder="Rechercher…"><select id="journalFilter"><option value="">Toutes catégories</option><option value="damage">Dégâts</option><option value="heal">Soins</option><option value="spirit">Esprits</option><option value="rest">Repos</option><option value="fail">Échecs</option><option value="crit">Critiques</option></select><button class="ability" id="clearJournal">Vider</button></div></div><div id="timeline" class="timeline"></div></article></div></section>
+
+<section class="view rules" id="rules"><div class="grid"><article class="panel wide"><h2>Règles opérationnelles</h2>
+  <details open><summary>Focaliseur spirituel · Longue Mémoire</summary><p>Lorsqu’un sort de barde est lancé à travers la pipe-focaliseur et qu’il inflige des dégâts ou restaure des PV, Wonq ajoute 1d6 à un jet de dégâts ou de soins. Le compagnon l’intègre à Moquerie cruelle, Murmures dissonants et Mot de guérison.</p></details>
+  <details><summary>Contes de l’Au-delà</summary><p>Tirer coûte une action bonus et une Inspiration. Offrir coûte une action, portée 9 m. Le conte est ensuite consommé ; les boutons de résolution n’utilisent pas une seconde action de Wonq.</p></details>
+  <details><summary>Cortège des absents · règle personnalisée</summary><p>Coût 2 charges de la Longue Mémoire. Jusqu’à 3 silhouettes de fumée à 18 m, 10 minutes, CA 15, 1 PV, vitesse 9 m. Par action bonus de Wonq, une silhouette peut Aider, Chercher, Se cacher, manipuler ou faire diversion.</p></details>
+  <details><summary>Hadozee</summary><p>Pieds dextres permet de manipuler un petit objet ou un contenant par action bonus. Planeur utilise la réaction après une chute d’au moins 3 m. Esquive Hadozee réduit les dégâts de 1d6+3, trois fois par repos long.</p></details>
+  <details><summary>Chant reposant</summary><p>Lors d’un repos court, les alliés qui dépensent au moins un dé de vie récupèrent 1d6 PV supplémentaires. Le compagnon rappelle ce bonus sans modifier automatiquement leurs PV.</p></details>
+  <details><summary>Concentration</summary><p>Une seule concentration à la fois. Après des dégâts, le DD du JdS de Constitution est max(10, partie entière des dégâts divisés par deux). Cliquer sur l’état de concentration permet de l’interrompre manuellement.</p></details>
+  </article><article class="panel"><h2>Valeurs retenues</h2><div class="sequence"><div class="step">CHA 20 · DD 16 · attaque de sort +8</div><div class="step">CA 13 · PV 59 · initiative +3</div><div class="step">Bâton +2 · Dague +5</div><div class="step">Slots 4 / 3 / 3 / 2</div></div></article><article class="panel"><h2>Arbitrage documentaire</h2><div class="warn">Le brouillon Goliath/rapière a été écarté au profit des fiches finales Hadozee/Bâton. Injonction est conservée comme choix précédemment validé de Faveur des fées.</div></article></div></section>
+</main>
+
+<aside id="ribbon" class="ribbon" aria-live="polite"><b id="ribbonTitle">Dernier résultat</b><span id="ribbonText">Prêt. Que les absents parlent.</span><button id="closeRibbon" aria-label="Réduire">⌄</button></aside><button id="resultBadge" class="result-badge">☷ Dernier résultat</button>
+<div id="fx" class="fx"><div id="fxLabel" class="fx-label"></div><div id="particles"></div></div>
+<div id="attackModal" class="modal" hidden role="dialog" aria-modal="true"><div class="modal-box"><div class="eyebrow" id="attackName">Jet d’attaque</div><div class="modal-roll" id="attackTotal">—</div><div id="attackDetail" class="meta"></div><h3>Est-ce que cette attaque touche ?</h3><div class="modal-actions"><button id="attackNo" class="no">Non</button><button id="attackCancel" class="cancel">Annuler</button><button id="attackYes" class="yes">Oui</button></div></div></div>
+<div id="saveModal" class="modal" hidden role="dialog" aria-modal="true"><div class="modal-box"><div class="eyebrow" id="saveName">Jet de sauvegarde</div><div class="modal-roll" id="saveDC">DD 16</div><div id="saveDetail" class="meta"></div><h3>La cible réussit-elle sa sauvegarde ?</h3><div class="modal-actions"><button id="saveFail" class="no">Non · échec</button><button id="saveCancel" class="cancel">Annuler</button><button id="saveSuccess" class="yes">Oui · réussite</button></div></div></div>
+<script>
+(()=>{'use strict';
+const KEY='wonq-companion-v1';
+const defaults={version:1,hp:59,thp:0,combat:1,turn:1,round:1,turnDamage:0,econ:{action:0,bonus:0,reaction:0,move:0},insp:5,dodge:3,mistyFree:1,commandFree:1,memory:5,slots:{1:4,2:3,3:3,4:2},concentration:null,tale:null,taleChoices:null,voice:1,cortege:false,conditions:[],sessionSpell:'',journal:[],pending:null,lastResult:'Prêt. Que les absents parlent.'};
+const MAX={insp:5,dodge:3,memory:5};
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const clone=o=>JSON.parse(JSON.stringify(o));let S=loadState(),undoStack=loadUndo(),rollMode='normal',ribbonTimer;
+function normalize(x){const s={...clone(defaults),...(x||{})};s.econ={...defaults.econ,...(x?.econ||{})};s.slots={...defaults.slots,...(x?.slots||{})};s.journal=Array.isArray(x?.journal)?x.journal:[];s.conditions=Array.isArray(x?.conditions)?x.conditions:[];for(const k of ['hp','thp','turn','round','combat','turnDamage','insp','dodge','memory'])s[k]=Math.max(0,Number.isFinite(+s[k])?+s[k]:defaults[k]);s.hp=Math.min(59,s.hp);s.insp=Math.min(5,s.insp);s.dodge=Math.min(3,s.dodge);s.memory=Math.min(5,s.memory);return s}
+function loadState(){try{return normalize(JSON.parse(localStorage.getItem(KEY)))}catch{return clone(defaults)}}function loadUndo(){try{const u=JSON.parse(localStorage.getItem(KEY+'-undo'));return Array.isArray(u)?u:[]}catch{return[]}}
+function save(){localStorage.setItem(KEY,JSON.stringify(S));localStorage.setItem(KEY+'-undo',JSON.stringify(undoStack.slice(-25)))}function snapshot(){undoStack.push(clone({...S,pending:null}));if(undoStack.length>25)undoStack.shift();save()}
+function record(title,text,type=''){S.journal.push({combat:S.combat,round:S.round,turn:S.turn,title,text,type,time:new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'})});if(S.journal.length>180)S.journal.shift();S.lastResult=title+' · '+text;showRibbon(title,text);if(type)playFX(type,title);save();render()}
+function showRibbon(title,text){$('#ribbonTitle').textContent=title;$('#ribbonText').textContent=text;$('#resultBadge').classList.remove('show');$('#ribbon').classList.add('show');clearTimeout(ribbonTimer);ribbonTimer=setTimeout(collapseRibbon,4200)}function collapseRibbon(){$('#ribbon').classList.remove('show');$('#resultBadge').classList.add('show')}
+function playFX(type,label){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;const f=$('#fx'),box=$('#particles');f.className='fx';box.innerHTML='';$('#fxLabel').textContent=type==='crit'?'CRITIQUE':type==='fail'?'RATÉ':type==='heal'?'SOUFFLE VITAL':type==='psychic'?'ESPRITS':'IMPACT';for(let i=0;i<(type==='crit'?34:22);i++){const p=document.createElement('i'),a=Math.random()*Math.PI*2,dist=90+Math.random()*Math.min(innerWidth,520)*.55;p.className='particle';p.style.cssText=`--x:${Math.cos(a)*dist}px;--y:${Math.sin(a)*dist}px;--s:${5+Math.random()*14}px;--d:${.55+Math.random()*.42}s;--delay:${Math.random()*.1}s`;box.appendChild(p)}void f.offsetWidth;f.className='fx '+type+' play';if(navigator.vibrate)navigator.vibrate(type==='crit'?[25,20,45]:type==='fail'?[15,25,15]:15);setTimeout(()=>{f.className='fx';box.innerHTML=''},1050)}
+function die(s){return 1+Math.floor(Math.random()*s)}function dice(n,s,mod=0){const rolls=Array.from({length:n},()=>die(s));return{rolls,total:Math.max(0,rolls.reduce((a,b)=>a+b,0)+mod)}}function d20(){const a=die(20),b=die(20);return{natural:rollMode==='adv'?Math.max(a,b):rollMode==='dis'?Math.min(a,b):a,detail:rollMode==='normal'?`${a}`:`${a}, ${b} → ${rollMode==='adv'?'meilleur':'moins bon'}`}}
+function spendE(key){if(S.econ[key]){record('Économie du tour',`${key==='bonus'?'Action bonus':key} déjà utilisée.`,'fail');return false}S.econ[key]=1;return true}function spendSlot(level){if(S.slots[level]<1){record('Emplacement indisponible',`Aucun emplacement de niveau ${level}.`,'fail');return false}S.slots[level]--;return true}
+function beginTransaction(){snapshot();return clone(undoStack[undoStack.length-1])}function cancelPending(){if(!S.pending)return;const before=S.pending.before;S=normalize(before);S.pending=null;undoStack.pop();save();render();collapseModal();showRibbon('Résolution annulée','État antérieur restauré sans double dépense.')}function collapseModal(){$('#attackModal').hidden=true;$('#saveModal').hidden=true}
+const weapons={staff1:{name:'Bâton · 1 main',bonus:2,n:1,s:6,mod:-1,type:'contondants'},staff2:{name:'Bâton · 2 mains',bonus:2,n:1,s:8,mod:-1,type:'contondants'},dagger:{name:'Dague',bonus:5,n:1,s:4,mod:2,type:'perforants'}};
+function startAttack(data,{spendAction=true}={}){const before=beginTransaction();if(spendAction&&!spendE('action')){undoStack.pop();return}const manual=parseInt($('#manualRoll').value),r=Number.isFinite(manual)?{natural:Math.max(1,Math.min(20,manual)),detail:'manuel'}:d20();S.pending={kind:'attack',data,r,before};save();if(r.natural===1)return resolveAttack(false,true);if(r.natural===20)return resolveAttack(true,true);$('#attackName').textContent=data.name;$('#attackTotal').textContent=r.natural+data.bonus;$('#attackDetail').textContent=`d20 ${r.detail} · ${r.natural} + ${data.bonus}`;$('#attackModal').hidden=false;$('#attackYes').focus();render()}
+function resolveAttack(hit,automatic=false){const p=S.pending;if(!p||p.kind!=='attack')return;const {data,r}=p;S.pending=null;collapseModal();if(!hit){record(data.name,`${r.natural}+${data.bonus} = ${r.natural+data.bonus} · ${r.natural===1?'1 naturel, échec automatique':'attaque ratée'} · aucun dégât`,'fail');return}const crit=r.natural===20,m=dice(data.n*(crit?2:1),data.s,data.mod);S.turnDamage+=m.total;record(data.name,`${crit?'20 naturel · critique automatique':`${r.natural}+${data.bonus} = ${r.natural+data.bonus} · touche confirmée`} · dégâts ${m.rolls.join('+')}${data.mod>=0?' + ':' − '}${Math.abs(data.mod)} = ${m.total} ${data.type}`,crit?'crit':'physical')}
+function startSave(data){const before=beginTransaction();if(data.cost&&!spendE(data.cost)){undoStack.pop();return}if(data.freeKey){if(!S[data.freeKey]){S=normalize(before);undoStack.pop();return record(data.name,'Lancement gratuit déjà utilisé.','fail')}S[data.freeKey]=0}if(data.level&&!spendSlot(data.level)){S=normalize(before);undoStack.pop();render();return}if(data.concentration&&!setConcentration(data.name,before)){undoStack.pop();return}S.pending={kind:'save',data,before};save();$('#saveName').textContent=data.name;$('#saveDC').textContent='DD '+(data.dc||16);$('#saveDetail').textContent=data.save+' · '+data.summary;$('#saveModal').hidden=false;$('#saveFail').focus();render()}
+function setConcentration(name,before){if(S.concentration&&S.concentration!==name&&!confirm(`Remplacer la concentration sur « ${S.concentration} » ?`)){S=normalize(before);return false}S.concentration=name;return true}
+function resolveSave(success){const p=S.pending;if(!p||p.kind!=='save')return;const d=p.data;S.pending=null;collapseModal();let text=`JdS ${d.save} DD ${d.dc||16} ${success?'réussi':'échoué'}`;let amount=0;if(d.damage){const roll=dice(d.damage.n,d.damage.s,d.damage.mod||0);amount=success?(d.half?Math.floor(roll.total/2):0):roll.total;text+=` · ${amount} dégâts ${d.damage.type} (${roll.rolls.join('+')}${d.damage.mod?` + ${d.damage.mod}`:''}${success&&d.half?' divisés par 2':''})`;S.turnDamage+=amount}text+=' · '+(success?d.onSuccess:d.onFail);record(d.name,text,success&&amount===0?'spirit':d.fx||'psychic')}
+function castDirect(spell,level){const before=beginTransaction(),cost=spell.cost||'action';if(!spendE(cost)){undoStack.pop();return}if(level&&!spendSlot(level)){S=normalize(before);undoStack.pop();render();return}if(spell.concentration&&!setConcentration(spell.name,before)){undoStack.pop();return}let text=level?`Emplacement N${level} dépensé. `:'';if(spell.heal){const r=dice(spell.heal.n+(level-spell.base),spell.heal.s,spell.heal.mod),focus=die(6),total=r.total+focus;text+=`Soins : ${r.rolls.join('+')} + ${spell.heal.mod} + focaliseur ${focus} = ${total} PV.`;record(spell.name,text,'heal');return}text+=spell.effect+(spell.concentration?' · concentration active':'');record(spell.name,text,spell.fx||'spirit')}
+const spells=[
+{name:'Lueurs féeriques',level:1,cost:'action',concentration:true,save:'DEX',summary:'cube de 6 m',effect:'Échec : cible illuminée, attaques contre elle avec avantage.',saveFlow:true,onFail:'illuminée, attaques avec avantage',onSuccess:'aucun effet',fx:'spirit'},
+{name:'Détection de la magie',level:1,cost:'action',concentration:true,effect:'Détecte les auras magiques à 9 m pendant 10 min.'},
+{name:'Suggestion',level:2,cost:'action',concentration:true,save:'SAG',summary:'portée 9 m · jusqu’à 8 h',saveFlow:true,onFail:'suggestion suivie tant qu’elle reste raisonnable',onSuccess:'aucun effet',fx:'psychic'},
+{name:'Invisibilité',level:2,cost:'action',concentration:true,effect:'Cible invisible jusqu’à 1 h ou fin anticipée.'},
+{name:'Restauration partielle',level:2,cost:'action',effect:'Met fin à une maladie ou à une condition : aveuglé, assourdi, paralysé ou empoisonné.'},
+{name:'Motif hypnotique',level:3,cost:'action',concentration:true,save:'SAG',summary:'cube de 9 m · jusqu’à 1 min',saveFlow:true,onFail:'charmé et neutralisé ; vitesse 0',onSuccess:'aucun effet',fx:'psychic'},
+{name:'Dissipation de la magie',level:3,cost:'action',effect:'Sort de niveau 3 ou moins dissipé ; au-delà, test de CHA +5 contre DD 10+niveau du sort.'},
+{name:'Porte dimensionnelle',level:4,cost:'action',effect:'Téléportation jusqu’à 150 m avec une créature consentante.'},
+{name:'Invisibilité supérieure',level:4,cost:'action',concentration:true,effect:'Cible invisible pendant 1 min, même en attaquant ou en lançant un sort.'}
+];
+const tales=[null,
+{name:'Marc Assin · La Bête',short:'Animal rusé',effect:'Pendant 10 min, ajoute 1d8 à un test d’INT, SAG ou CHA après le jet.'},
+{name:'Alain Proviste · Le Guerrier',short:'Duelliste',effect:'La cible peut utiliser une action bonus pour une attaque de sort de mêlée : +8, 2d8+5 force.',attack:true},
+{name:'Clam & Dya · Les Amis',short:'Amis aimés',effect:'La cible et une autre créature à 1,5 m récupèrent chacune 1d8+5 PV.',heal:true},
+{name:'Jacques Mesrine · Le Fuyard',short:'Fuyard',effect:'La cible se téléporte immédiatement de 9 m en réaction ; jusqu’à 5 créatures visibles à 9 m peuvent suivre par réaction.'},
+{name:'Cid Action · Le Vengeur',short:'Vengeur',effect:'Pendant 1 min, une créature qui touche la cible en mêlée subit 1d8 force.',roll:true},
+{name:'Richard Cœur-de-Lion · Le Héros',short:'Héros',effect:'La cible gagne 1d8+8 PV temporaires et +3 m de vitesse tant qu’ils restent.',thp:true},
+{name:'Fée Lation · La Fée',short:'Séducteur',effect:'Une créature à 9 m fait un JdS SAG DD16 ; échec : charmée jusqu’à la fin de son prochain tour et attaque la cible désignée.',save:true},
+{name:'Paul Tergeist · Le Sombre Esprit',short:'Fantôme',effect:'Invisible jusqu’à la fin de son prochain tour ou jusqu’à attaquer/lancer un sort ; sur une touche : +1d8 nécrotique et effrayé.',roll:true}
+];
+function drawTale(two=false){const before=beginTransaction();if(S.insp<1){undoStack.pop();return record('Contes de l’Au-delà','Aucune Inspiration restante.','fail')}if(!spendE('bonus')){undoStack.pop();return}if(two&& !S.voice){S=normalize(before);undoStack.pop();return record('Une voix parmi plusieurs','Déjà utilisée depuis le dernier repos long.','fail')}S.insp--;if(two){S.voice=0;const a=die(8),b=die(8);S.taleChoices=[a,b];S.tale=null;record('Deux voix dans la fumée',`${a} — ${tales[a].name} OU ${b} — ${tales[b].name}. Choisissez le conte à conserver.`,'spirit')}else{const n=die(8);S.tale=n;S.taleChoices=null;record('Conte mémorisé',`${n} — ${tales[n].name}.`,'spirit')}}
+function chooseTale(n){if(!S.taleChoices?.includes(n))return;S.tale=n;S.taleChoices=null;record('Conte choisi',`${n} — ${tales[n].name}.`,'spirit')}
+function offerTale(){if(!S.tale)return record('Contes de l’Au-delà','Aucun conte mémorisé.','fail');const before=beginTransaction();if(!spendE('action')){undoStack.pop();return}const n=S.tale,t=tales[n];S.tale=null;record('Conte offert',`${t.name} · ${t.effect}`,'spirit');resolveTale(n)}
+function resolveTale(n){const t=tales[n];if(t.attack)startAttack({name:t.name,bonus:8,n:2,s:8,mod:5,type:'force'},{spendAction:false});else if(t.heal){const r=die(8)+5;record(t.name,`${r} PV rendus à chacune des deux cibles.`,'heal')}else if(t.roll){record(t.name,`Dé supplémentaire : ${die(8)} ${n===8?'nécrotique':'force'}.`,'spirit')}else if(t.thp){const r=die(8)+8;record(t.name,`${r} PV temporaires et +3 m de vitesse pour la cible.`,'heal')}else if(t.save)startSave({name:t.name,cost:null,save:'SAG',dc:16,summary:'charmé et attaque imposée',onFail:'charmée jusqu’à la fin de son prochain tour',onSuccess:'aucun effet',fx:'psychic'})}
+function damageWonq(n){n=Math.max(0,n);const before=beginTransaction(),absorbed=Math.min(S.thp,n);S.thp-=absorbed;S.hp=Math.max(0,S.hp-(n-absorbed));record('Dégâts reçus',`${n} dégâts : ${absorbed} absorbés par les PV temporaires, ${n-absorbed} appliqués aux PV.`,'fail')}function healWonq(n){const before=beginTransaction(),old=S.hp;S.hp=Math.min(59,S.hp+Math.max(0,n));record('Soins reçus',`${S.hp-old} PV récupérés.`,'heal')}
+function nextTurn(){snapshot();S.turn++;S.round++;S.turnDamage=0;S.econ={action:0,bonus:0,reaction:0,move:0};record('Tour suivant','Action, action bonus, réaction et mouvement restaurés. États persistants conservés.')}
+function shortRest(){if(!confirm('Repos court : restaurer 5 Inspirations, terminer le conte mémorisé et réinitialiser l’économie du tour ?'))return;snapshot();S.insp=5;S.tale=null;S.taleChoices=null;S.econ={action:0,bonus:0,reaction:0,move:0};record('Repos court','Inspiration 5/5 · conte dissipé · économie restaurée · Chant reposant d6 rappelé.','rest')}
+function longRest(){if(!confirm('Repos long : restaurer PV, emplacements, Inspiration, Esquives et lancements féeriques gratuits ? Les charges de la Longue Mémoire restent liées à l’aube.'))return;snapshot();Object.assign(S,{hp:59,thp:0,insp:5,dodge:3,mistyFree:1,commandFree:1,slots:{1:4,2:3,3:3,4:2},concentration:null,tale:null,taleChoices:null,voice:1,sessionSpell:'',turnDamage:0,econ:{action:0,bonus:0,reaction:0,move:0}});record('Repos long','PV 59/59 · slots 4/3/3/2 · Inspiration 5/5 · Esquive 3/3 · Foulée et Injonction gratuites restaurées · séance et concentration terminées. Longue Mémoire inchangée.','rest')}
+function newCombat(){if(!confirm('Commencer un nouveau combat ? Les ressources, le conte et la concentration seront conservés.'))return;snapshot();S.combat++;S.turn=1;S.round=1;S.turnDamage=0;S.econ={action:0,bonus:0,reaction:0,move:0};record('Nouveau combat',`Combat ${S.combat} · économie restaurée ; ressources et états persistants conservés.`,'rest')}
+function undo(){if(!undoStack.length)return record('Annulation','Aucune opération à annuler.','fail');const previous=undoStack.pop();S=normalize(previous);S.pending=null;save();render();showRibbon('Action annulée','L’état complet antérieur a été restauré.');playFX('spirit','Annulation')}
+function adjust(key,delta){snapshot();S[key]=Math.max(0,Math.min(MAX[key],S[key]+delta));record('Ajustement de ressource',`${key==='insp'?'Inspiration':key==='dodge'?'Esquive Hadozee':'Longue Mémoire'} : ${S[key]}/${MAX[key]}.`,'spirit')}
+function useDodge(){const before=beginTransaction();if(S.dodge<1){undoStack.pop();return record('Esquive Hadozee','Aucune utilisation restante.','fail')}if(!spendE('reaction')){undoStack.pop();return}S.dodge--;const r=die(6)+3;record('Esquive Hadozee',`Réduction de ${r} dégâts (1d6+3) · ${S.dodge}/3 restantes.`,'physical')}
+function useMisty(free){const before=beginTransaction();if(!spendE('bonus')){undoStack.pop();return}if(free){if(!S.mistyFree){S=normalize(before);undoStack.pop();return record('Foulée brumeuse','Lancement gratuit déjà utilisé.','fail')}S.mistyFree=0}else if(!spendSlot(2)){S=normalize(before);undoStack.pop();render();return}record('Foulée brumeuse',`${free?'Lancement gratuit':'Emplacement N2 dépensé'} · téléportation de 9 m.`,'spirit')}
+function render(){S=normalize(S);$('#hp').value=S.hp;$('#thp').value=S.thp;$('#turn').textContent=S.turn;$('#round').textContent=S.round;$('#turnDamage').textContent=S.turnDamage;$('#inspHead').textContent=`${S.insp}/5`;$('#dodgeHead').textContent=`${S.dodge}/3`;$('#taleHead').textContent=S.tale||S.taleChoices?'●':'—';$('#inspCount').textContent=`${S.insp}/5`;$('#dodgeCount').textContent=`${S.dodge}/3`;$('#mistyCount').textContent=S.mistyFree?'1/1':'0/1';$('#commandCount').textContent=S.commandFree?'1/1':'0/1';$('#memoryCount').textContent=`${S.memory}/5`;$('#concState').textContent='Concentration : '+(S.concentration||'aucune');$('#concState').classList.toggle('on',!!S.concentration);$('#taleState').textContent='Conte : '+(S.tale?tales[S.tale].short:S.taleChoices?'choix en attente':'aucun');$('#taleState').classList.toggle('on',!!(S.tale||S.taleChoices));$('#cortegeState').textContent='Cortège : '+(S.cortege?'actif':'inactif');$('#cortegeState').classList.toggle('on',S.cortege);$('#currentTale').textContent=S.tale?tales[S.tale].name:S.taleChoices?'Choisir ci-dessous':'Aucun';$('#sessionState').textContent=S.sessionSpell?`Séance : ${S.sessionSpell}, jusqu’au repos long.`:'Aucun sort de séance mémorisé.';$$('.economy').forEach(b=>{const k=b.dataset.econ;b.classList.toggle('used',!!S.econ[k]);const sm=b.querySelector('small');if(sm)sm.textContent=S.econ[k]?'utilisé':k==='move'?'9 m':'disponible'});$$('.condition').forEach(b=>b.classList.toggle('on',S.conditions.includes(b.dataset.condition)));renderSlots();renderTales();renderJournal();save()}
+function renderSlots(){const box=$('#slotDots');box.innerHTML='';for(let l=1;l<=4;l++){const row=document.createElement('div');row.className='row';const label=document.createElement('b');label.textContent=`N${l}`;row.appendChild(label);for(let i=0;i<defaults.slots[l];i++){const b=document.createElement('button');b.className='dot '+(i<S.slots[l]?'on':'');b.title=i<S.slots[l]?'Disponible':'Dépensé';b.onclick=()=>{snapshot();S.slots[l]=i<S.slots[l]?i:Math.min(defaults.slots[l],i+1);record('Emplacement ajusté',`Niveau ${l} : ${S.slots[l]}/${defaults.slots[l]}.`,'spirit')};row.appendChild(b)}box.appendChild(row)}}
+function renderTales(){const box=$('#taleGrid');box.innerHTML='';for(let n=1;n<=8;n++){const t=tales[n],card=document.createElement('article');card.className='tale '+(S.tale===n||S.taleChoices?.includes(n)?'active':'');card.innerHTML=`<b>${n} · ${t.name}</b><div class="meta">${t.effect}</div>`;if(S.taleChoices?.includes(n)){const b=document.createElement('button');b.className='ability';b.textContent='Choisir ce conte';b.onclick=()=>chooseTale(n);card.appendChild(b)}box.appendChild(card)}}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function renderJournal(){const root=$('#timeline'),term=$('#journalSearch').value.trim().toLowerCase(),filter=$('#journalFilter').value,items=S.journal.filter(e=>(!term||(e.title+' '+e.text).toLowerCase().includes(term))&&(!filter||e.type===filter));if(!items.length){root.innerHTML='<div class="empty">Aucune entrée pour cette recherche.</div>';return}const groups={};items.forEach(e=>{const k=`${e.combat}|${e.round}|${e.turn}`;(groups[k]??=[]).push(e)});root.innerHTML=Object.keys(groups).reverse().map(k=>{const [c,r,t]=k.split('|');return `<section class="combat-group"><div class="combat-title">Combat ${c} · Round ${r} · Tour ${t}</div>${groups[k].slice().reverse().map(e=>`<div class="log-entry ${esc(e.type)}"><strong>${esc(e.time)} · ${esc(e.title)}</strong><span>${esc(e.text)}</span></div>`).join('')}</section>`}).join('')}
+function buildSpells(){const groups={};spells.forEach(s=>(groups[s.level]??=[]).push(s));$('#spellGroups').innerHTML=Object.keys(groups).map(l=>`<section class="spell-level"><h2>Niveau ${l}</h2><div class="spell-grid">${groups[l].map((s,i)=>`<article class="spell"><div class="eyebrow">${s.cost}${s.concentration?' · concentration':''}</div><h3>${s.name}</h3><div class="meta">${s.saveFlow?`JdS ${s.save} DD16 · ${s.summary}`:s.effect}</div><button class="ability spellCast" data-level="${l}" data-index="${i}">Lancer</button></article>`).join('')}</div></section>`).join('');$$('.spellCast').forEach(b=>b.onclick=()=>{const s=groups[+b.dataset.level][+b.dataset.index];s.saveFlow?startSave({...s,dc:16}):castDirect(s,+b.dataset.level)})}
+function restorePending(){if(!S.pending)return;const p=S.pending;if(p.kind==='attack'){const {data,r}=p;$('#attackName').textContent=data.name;$('#attackTotal').textContent=r.natural+data.bonus;$('#attackDetail').textContent=`Résolution restaurée · d20 ${r.detail} · ${r.natural} + ${data.bonus}`;$('#attackModal').hidden=false}else if(p.kind==='save'){const d=p.data;$('#saveName').textContent=d.name;$('#saveDC').textContent='DD '+(d.dc||16);$('#saveDetail').textContent='Résolution restaurée · '+d.save+' · '+d.summary;$('#saveModal').hidden=false}}
+function bind(){$$('.nav button').forEach(b=>b.onclick=()=>{$$('.nav button').forEach(x=>x.classList.toggle('active',x===b));$$('.view').forEach(v=>v.classList.toggle('active',v.id===b.dataset.view));scrollTo({top:0,behavior:'smooth'})});$$('.rollmode').forEach(b=>b.onclick=()=>{rollMode=b.dataset.mode;$$('.rollmode').forEach(x=>x.classList.toggle('on',x===b))});$$('.weapon').forEach(b=>b.onclick=()=>startAttack(weapons[b.dataset.weapon]));$$('.adjust').forEach(b=>b.onclick=()=>adjust(b.dataset.key,+b.dataset.delta));$$('.condition').forEach(b=>b.onclick=()=>{snapshot();const c=b.dataset.condition;S.conditions=S.conditions.includes(c)?S.conditions.filter(x=>x!==c):[...S.conditions,c];if(c==='Cortège actif')S.cortege=S.conditions.includes(c);record('État '+(S.conditions.includes(c)?'activé':'retiré'),c,'spirit')});$$('[data-econ]').forEach(b=>b.onclick=()=>{snapshot();const k=b.dataset.econ;S.econ[k]=S.econ[k]?0:1;record('Économie ajustée',`${k} ${S.econ[k]?'utilisé':'rendu disponible'}.`)});
+$('#attackYes').onclick=()=>resolveAttack(true);$('#attackNo').onclick=()=>resolveAttack(false);$('#attackCancel').onclick=cancelPending;$('#saveSuccess').onclick=()=>resolveSave(true);$('#saveFail').onclick=()=>resolveSave(false);$('#saveCancel').onclick=cancelPending;$('#closeRibbon').onclick=collapseRibbon;$('#resultBadge').onclick=()=>{showRibbon('Dernier résultat',S.lastResult)};$('#nextTurn').onclick=nextTurn;$('#quickShort').onclick=shortRest;$('#quickLong').onclick=longRest;$('#shortRest').onclick=shortRest;$('#longRest').onclick=longRest;$('#newCombat').onclick=newCombat;$('#undo').onclick=undo;$('#undo2').onclick=undo;$('#takeDamage').onclick=()=>damageWonq(+$('#hpAmount').value||0);$('#takeHeal').onclick=()=>healWonq(+$('#hpAmount').value||0);$('#hp').onchange=e=>{snapshot();S.hp=Math.max(0,Math.min(59,+e.target.value||0));record('PV ajustés',`PV actuels : ${S.hp}/59.`)};$('#thp').onchange=e=>{snapshot();S.thp=Math.max(0,+e.target.value||0);record('PV temporaires ajustés',`${S.thp} PV temporaires.`)};
+$('#mockery').onclick=()=>startSave({name:'Moquerie cruelle',cost:'action',save:'SAG',dc:16,summary:'2d4 + focaliseur 1d6 psychiques',damage:{n:2,s:4,mod:die(6),type:'psychiques'},half:false,onFail:'désavantage à la prochaine attaque avant la fin de son prochain tour',onSuccess:'aucun effet',fx:'psychic'});$('#giveInspiration').onclick=()=>{const before=beginTransaction();if(S.insp<1){undoStack.pop();return record('Inspiration bardique','Aucune utilisation restante.','fail')}if(!spendE('bonus')){undoStack.pop();return}S.insp--;record('Inspiration bardique','1d8 donné à un allié · 1 Inspiration consommée.','spirit')};$('#quickTale').onclick=()=>drawTale(false);$('#drawTale').onclick=()=>drawTale(false);$('#drawTwo').onclick=()=>drawTale(true);$('#offerTale').onclick=offerTale;$('#quickDodge').onclick=useDodge;$('#hadozeeDodge').onclick=useDodge;$('#glide').onclick=()=>{const before=beginTransaction();if(!spendE('reaction')){undoStack.pop();return}record('Planeur Hadozee','Chute d’au moins 3 m · jusqu’à 9 m horizontalement · 0 dégât de chute.','physical')};$('#quickMisty').onclick=()=>useMisty(true);$('#mistyFree').onclick=()=>useMisty(true);$('#mistySlot').onclick=()=>useMisty(false);
+$('#commandFree').onclick=()=>startSave({name:'Injonction · '+$('#commandWord').value,cost:'action',freeKey:'commandFree',save:'SAG',dc:16,summary:'ordre en un mot',onFail:'exécute l’ordre à son prochain tour',onSuccess:'aucun effet',fx:'psychic'});$('#commandSlot').onclick=()=>startSave({name:'Injonction · '+$('#commandWord').value,cost:'action',level:1,save:'SAG',dc:16,summary:'ordre en un mot',onFail:'exécute l’ordre à son prochain tour',onSuccess:'aucun effet',fx:'psychic'});
+$('#activateCortege').onclick=()=>{const before=beginTransaction();if(S.memory<2){undoStack.pop();return record('Cortège des absents','Charges insuffisantes.','fail')}S.memory-=2;S.cortege=true;if(!S.conditions.includes('Cortège actif'))S.conditions.push('Cortège actif');record('Cortège des absents','2 charges dépensées · jusqu’à 3 silhouettes · 18 m · 10 min · CA15, 1 PV, vitesse 9 m.','spirit')};$('#dawn').onclick=()=>{snapshot();const r=die(4)+1,before=S.memory;S.memory=Math.min(5,S.memory+r);record('Aube',`Longue Mémoire : +${S.memory-before} charge(s), ${S.memory}/5.`,'rest')};$('#saveSessionSpell').onclick=()=>{const name=$('#sessionSpell').value.trim();if(!name)return record('Séance de spiritisme','Saisissez le sort retenu.','fail');snapshot();S.sessionSpell=name;record('Séance de spiritisme',`${name} mémorisé jusqu’au prochain repos long.`,'spirit')};$('#concCheck').onclick=()=>{const n=Math.max(0,+$('#concDamage').value||0),dc=Math.max(10,Math.floor(n/2));$('#concResult').textContent=S.concentration?`JdS Constitution DD ${dc} · bonus +2 · concentration : ${S.concentration}.`:'Aucune concentration active.';record('Test de concentration',S.concentration?`Après ${n} dégâts : JdS CON DD ${dc}, bonus +2.`:'Calcul demandé sans concentration active.')};$('#concState').onclick=()=>{if(!S.concentration)return;snapshot();const old=S.concentration;S.concentration=null;record('Concentration interrompue',old,'spirit')};
+$('#journalSearch').oninput=renderJournal;$('#journalFilter').onchange=renderJournal;$('#clearJournal').onclick=()=>{if(!confirm('Effacer définitivement le Journal ?'))return;snapshot();S.journal=[];save();render();showRibbon('Journal effacé','La prochaine action ouvrira une nouvelle chronologie.')};$('#resetAll').onclick=()=>{if(!confirm('Réinitialiser toute la session, Journal compris ?'))return;localStorage.removeItem(KEY);localStorage.removeItem(KEY+'-undo');S=clone(defaults);undoStack=[];render();showRibbon('Session réinitialisée','Wonq revient à son état initial.')};
+}
+function initQuick(){for(let l=1;l<=4;l++){const d=document.createElement('button');d.className='ability';d.textContent=`N${l}`;d.onclick=()=>startSave({name:`Murmures dissonants N${l}`,cost:'action',level:l,save:'SAG',dc:16,summary:`${l+2}d6 + focaliseur 1d6 psychiques`,damage:{n:l+2,s:6,mod:die(6),type:'psychiques'},half:true,onFail:'doit fuir en réaction si possible',onSuccess:'moitié des dégâts, pas de fuite',fx:'psychic'});$('#dissonantButtons').appendChild(d);const h=document.createElement('button');h.className='ability';h.textContent=`N${l}`;h.onclick=()=>castDirect({name:`Mot de guérison N${l}`,cost:'bonus',heal:{n:1,s:4,mod:5},base:1},l);$('#healingButtons').appendChild(h)}}
+buildSpells();initQuick();bind();render();if(S.journal.length){const last=S.journal[S.journal.length-1];$('#ribbonTitle').textContent=last.title;$('#ribbonText').textContent=last.text}restorePending();
+})();
 </script>
 </body>
 </html>
