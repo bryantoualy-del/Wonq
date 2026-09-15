@@ -16,7 +16,7 @@
   const [baseResponse,talesResponse]=await Promise.all([fetch(base,{cache:'no-store'}),fetch('tales-aidedd.js?v=2',{cache:'no-store'})]);
   let html=await baseResponse.text();
   const talesCode=await talesResponse.text();
-  const lastScript=html.lastIndexOf('</script>');
+  const lastScript=html.lastIndexOf('<\\/script>');
   if(lastScript<0)throw new Error('Script principal introuvable');
   html=html.slice(0,lastScript)+talesCode+html.slice(lastScript);
   html=html.replace('</body>','<script src="signature-icon.js?v=6"><\/script></body>');
