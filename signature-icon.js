@@ -29,6 +29,7 @@ const style=document.createElement('style');style.textContent=`
  .dashboard .hp-tools button{min-height:27px!important;height:27px!important;padding:2px 4px!important;font-size:.58rem!important}
 }
 @media(prefers-reduced-motion:no-preference){.pipe-smoke{animation:wonqSmoke 3.5s ease-in-out infinite}.smoke-two{animation-delay:1.1s}.smoke-three{animation-delay:2.1s}@keyframes wonqSmoke{0%{stroke-dashoffset:30;opacity:0;transform:translateY(4px)}24%{opacity:.82}72%{stroke-dashoffset:0;opacity:.48}100%{stroke-dashoffset:-18;opacity:0;transform:translateY(-10px)}}}
+@media(min-width:768px) and (max-width:1100px){.dashboard{grid-template-columns:minmax(155px,1.25fr) repeat(4,minmax(60px,1fr))!important;gap:5px!important}.hpstat{padding:7px!important}.hpgrid{gap:4px!important;margin-top:3px!important}.hp-tools{grid-template-columns:54px 1fr 1fr!important;gap:4px!important;margin-top:4px!important}.hp-tools input{padding:4px!important}.hp-tools button{min-height:32px!important;padding:3px!important}}
 @media(prefers-reduced-motion:reduce){.pipe-smoke{stroke-dashoffset:0;opacity:.58}}
 `;
 document.head.appendChild(style);
