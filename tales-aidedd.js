@@ -8,7 +8,7 @@ const install=()=>{
  tales[4]={name:'Jacques Mesrine · Le Fuyard',short:'Fuyard',effect:'La cible peut utiliser sa réaction pour se téléporter de 9 m. Elle peut faire suivre jusqu’à 5 créatures visibles à 9 m, chacune utilisant également sa réaction.'};
  tales[5]={name:'Cid Action · Le Vengeur',short:'Vengeur',effect:'Pendant 1 minute, lorsqu’une créature visible à 9 m de la cible est touchée, la cible peut utiliser sa réaction pour infliger 1d8 dégâts de force à l’attaquant.',deferred:true};
  tales[6]={name:'Richard Cœur-de-Lion · Le Héros',short:'Héros',effect:'La cible gagne 1d8 + 8 PV temporaires. Tant qu’ils lui restent, sa vitesse de marche augmente de 3 m.',thp:true};
- tales[7]={name:'Fée Lation · La Fée',short:'Fée malicieuse',effect:'JdS Sagesse DD 16. Échec : charmée jusqu’à la fin de son prochain tour et doit utiliser son action pour attaquer au corps à corps la créature désignée.',save:true};
+ tales[7]={name:'Fée Lation · La Fée',short:'Fée malicieuse',effect:'JdS Sagesse DD 16. Échec : charmée jusqu’à la fin de son prochain tour et doit utiliser son action pour attaquer au corps à corps la créature désignée. Sans créature désignée, elle agit normalement.',save:true};
  tales[8]={name:'Paul Tergeist · Le Sombre Esprit',short:'Tueur des ténèbres',effect:'Invisible jusqu’à la fin de son prochain tour ou jusqu’à toucher avec une attaque. Cette touche inflige +1d8 nécrotique et effraie la victime jusqu’à la fin de son prochain tour.',deferred:true};
 
  const baseRenderTales=renderTales;
@@ -40,12 +40,11 @@ const install=()=>{
   else if(n===4){record(t.name,'La cible peut se téléporter de 9 m avec sa réaction et faire suivre jusqu’à 5 créatures, avec leur réaction.','spirit','tale4')}
   else if(n===5){S.aideddTale5Active=true;record(t.name,'Effet actif pendant 1 minute. Utilisez le déclencheur lorsqu’une créature visible à 9 m de la cible est touchée.','spirit','tale5')}
   else if(n===6){const r=die(8)+8;record(t.name,r+' PV temporaires et +3 m de vitesse tant que ces PV temporaires subsistent.','heal','tale6')}
-  else if(n===7){startSave({name:t.name,cost:null,save:'SAG',dc:16,summary:'charme puis attaque de mêlée imposée',onFail:'charmée jusqu’à la fin de son prochain tour ; utilise son action pour attaquer au corps à corps la cible désignée',onSuccess:'aucun effet',fx:'tale7'})}
+  else if(n===7){startSave({name:t.name,cost:null,save:'SAG',dc:16,summary:'charme puis attaque de mêlée imposée',onFail:'charmée jusqu’à la fin de son prochain tour ; utilise son action pour attaquer au corps à corps la cible désignée, ou agit normalement si aucune cible n’est désignée',onSuccess:'aucun effet',fx:'tale7'})}
   else if(n===8){S.aideddTale8Active=true;record(t.name,'Invisibilité active. Ne lancez le d8 nécrotique que si la cible touche avec une attaque.','spirit','tale8')}
   renderActive();
  };
  renderTales();
- record('Contes vérifiés','Table des huit Contes alignée sur la version AideDD utilisée par Wonq.','spirit');
  return true;
 };
 if(!install()){const observer=new MutationObserver(()=>{if(install())observer.disconnect()});observer.observe(document.documentElement,{childList:true,subtree:true})}
