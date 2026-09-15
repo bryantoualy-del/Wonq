@@ -19,7 +19,7 @@
   const appEnd=html.lastIndexOf('})();');
   if(appEnd<0)throw new Error('Moteur principal introuvable');
   html=html.slice(0,appEnd)+talesCode+html.slice(appEnd);
-  html=html.replace('</body>','<script src="signature-icon.js?v=6"><\/script></body>');
+  html=html.replace('</body>','<script src="signature-icon.js?v=7"><\/script></body>');
   document.open();document.write(html);document.close();
  }catch(e){document.body.innerHTML='<div class="boot"><div><h1>Wonq</h1><p>Impossible de charger le compagnon. Recharge la page.</p></div></div>'}
 })();
