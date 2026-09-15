@@ -13,8 +13,13 @@
 (async()=>{
  try{
   const base='https://raw.githubusercontent.com/bryantoualy-del/Wonq/689201c0a472ebd806183b1747d3d1e481ad30ea/index.html';
-  let html=await (await fetch(base,{cache:'no-store'})).text();
-  html=html.replace('</body>','<script src="signature-icon.js?v=6"><\/script><script src="tales-aidedd.js?v=1"><\/script></body>');
+  const [baseResponse,talesResponse]=await Promise.all([fetch(base,{cache:'no-store'}),fetch('tales-aidedd.js?v=2',{cache:'no-store'})]);
+  let html=await baseResponse.text();
+  const talesCode=await talesResponse.text();
+  const lastScript=html.lastIndexOf('</script>');
+  if(lastScript<0)throw new Error('Script principal introuvable');
+  html=html.slice(0,lastScript)+talesCode+html.slice(lastScript);
+  html=html.replace('</body>','<script src="signature-icon.js?v=6"><\/script></body>');
   document.open();document.write(html);document.close();
  }catch(e){document.body.innerHTML='<div class="boot"><div><h1>Wonq</h1><p>Impossible de charger le compagnon. Recharge la page.</p></div></div>'}
 })();
