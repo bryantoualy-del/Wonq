@@ -20,7 +20,14 @@
   if(appEnd<0)throw new Error('Moteur principal introuvable');
   html=html.slice(0,appEnd)+talesCode+html.slice(appEnd);
   const quickAccessStart=html.indexOf('<article class="panel"><h2>Accès rapide</h2>');
-  if(quickAccessStart>=0){const quickAccessEnd=html.indexOf('</article>',quickAccessStart);if(quickAccessEnd>=0)html=html.slice(0,quickAccessStart)+html.slice(quickAccessEnd+10);}
+  /* Keep the historical quick-action controls in the DOM so the legacy
+     binder can attach every handler. They stay visually removed, as requested. */
+  if(quickAccessStart>=0){
+   html=html.slice(0,quickAccessStart)+html.slice(quickAccessStart).replace(
+    '<article class="panel"><h2>Accès rapide</h2>',
+    '<article class="panel" hidden aria-hidden="true"><h2>Accès rapide</h2>'
+   );
+  }
   html=html.replace('</body>','<script src="signature-icon.js?v=7"><\/script></body>');
   document.open();document.write(html);document.close();
  }catch(e){document.body.innerHTML='<div class="boot"><div><h1>Wonq</h1><p>Impossible de charger le compagnon. Recharge la page.</p></div></div>'}
