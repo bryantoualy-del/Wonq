@@ -57,14 +57,14 @@ playFX=function(type,label){
  f.className='fx';box.innerHTML='';$('#fxLabel').textContent=names[type]||label||'IMPACT';
  const tale=/^tale/.test(type),w=Math.max(innerWidth,700),h=Math.max(innerHeight,700),wisps=tale||type==='spirit'||type==='psychic'?22:16,sparks=tale||type==='crit'?24:14;
  for(let i=0;i<wisps;i++){
-  const p=document.createElement('i'),sway=(-.18+Math.random()*.36)*w,drop=.58*h+Math.random()*.62*h;
+  const p=document.createElement('i'),sway=(-.18+Math.random()*.36)*w,rise=-(.58*h+Math.random()*.62*h);
   p.className='particle smoke-wisp';
-  p.style.cssText=`left:${7+Math.random()*86}%;top:${-18+Math.random()*22}%;--x:${sway}px;--y:${drop}px;--xm:${-sway*.42}px;--ym:${drop*.43}px;--w:${28+Math.random()*(tale?70:54)}px;--h:${150+Math.random()*(tale?250:190)}px;--d:${1.9+Math.random()*1.15}s;--delay:${Math.random()*.34}s;--blur:${7+Math.random()*12}px;--grow:${1.05+Math.random()*.72};--r0:${-18+Math.random()*36}deg;--rm:${-30+Math.random()*60}deg;--rot:${-42+Math.random()*84}deg;--alpha:${.2+Math.random()*.22}`;
+  p.style.cssText=`left:${7+Math.random()*86}%;top:${96+Math.random()*18}%;--x:${sway}px;--y:${rise}px;--xm:${-sway*.42}px;--ym:${rise*.43}px;--w:${28+Math.random()*(tale?70:54)}px;--h:${150+Math.random()*(tale?250:190)}px;--d:${1.9+Math.random()*1.15}s;--delay:${Math.random()*.34}s;--blur:${7+Math.random()*12}px;--grow:${1.05+Math.random()*.72};--r0:${-18+Math.random()*36}deg;--rm:${-30+Math.random()*60}deg;--rot:${-42+Math.random()*84}deg;--alpha:${.2+Math.random()*.22}`;
   box.appendChild(p);
  }
  for(let i=0;i<sparks;i++){
-  const p=document.createElement('i'),drift=(-.14+Math.random()*.28)*w,drop=.42*h+Math.random()*.55*h;
-  p.className='particle spark';p.style.cssText=`left:${8+Math.random()*84}%;top:${-5+Math.random()*18}%;--x:${drift}px;--y:${drop}px;--s:${3+Math.random()*(tale?9:6)}px;--d:${1.45+Math.random()*.9}s;--delay:${Math.random()*.28}s`;box.appendChild(p);
+  const p=document.createElement('i'),drift=(-.14+Math.random()*.28)*w,rise=-(.42*h+Math.random()*.55*h);
+  p.className='particle spark';p.style.cssText=`left:${8+Math.random()*84}%;top:${92+Math.random()*14}%;--x:${drift}px;--y:${rise}px;--s:${3+Math.random()*(tale?9:6)}px;--d:${1.45+Math.random()*.9}s;--delay:${Math.random()*.28}s`;box.appendChild(p);
  }
  void f.offsetWidth;f.className='fx '+type+' play';
  if(navigator.vibrate)navigator.vibrate(type==='crit'?[28,18,55]:type==='fail'?[16,24,16]:tale?[14,18,32]:18);
