@@ -1,3 +1,4 @@
+
 /* Patch injecté dans le moteur historique de Wonq : ce fichier partage sa portée. */
 const resetWonqCombat=()=>{
  S.combat++;
@@ -39,14 +40,12 @@ $('#longRest').onclick=longRest;
 
 const wonqFxStyle=document.createElement('style');
 wonqFxStyle.textContent=`
-.fx{isolation:isolate;transition:none!important}.fx:before,.fx:after{content:'';position:absolute;inset:-28%;opacity:0;mix-blend-mode:screen;filter:blur(28px);transform:scale(.72) rotate(0deg)}
-.fx.play{animation:wonqStage 2.15s ease-out}.fx.play:before{background:radial-gradient(ellipse at 18% 72%,#f4fffbea 0 5%,#a8ddd4c7 15%,#599f9a73 30%,transparent 48%),radial-gradient(ellipse at 76% 30%,#eafffae8 0 6%,#9fd8d1b5 17%,#4b8c8970 32%,transparent 50%),radial-gradient(ellipse at 54% 82%,#e7c98b85 0 4%,#bd914b48 16%,transparent 38%);animation:wonqSmokeLeft 2.15s cubic-bezier(.2,.7,.25,1) forwards}
-.fx.play:after{background:radial-gradient(ellipse at 82% 72%,#f7fffceb 0 6%,#a4dcd5bd 19%,#548f8b68 34%,transparent 52%),radial-gradient(ellipse at 28% 24%,#dffaf5e2 0 6%,#8fcfc8aa 20%,#477f7d62 35%,transparent 52%),radial-gradient(ellipse at 68% 36%,#f0d39a75 0 3%,#bd8e4442 14%,transparent 34%);animation:wonqSmokeRight 2.15s cubic-bezier(.2,.7,.25,1) forwards}
-.fx-label{z-index:4;text-shadow:0 0 18px #fffdf0,0 0 42px #b6eee4,0 0 90px #68aaa5;animation:wonqLabel 1.35s ease-out forwards}.particle.smoke-wisp{z-index:2;border-radius:48% 52% 64% 36%;filter:blur(var(--blur));opacity:.76;background:radial-gradient(circle at 36% 34%,#ffffffed 0 6%,#d8f5efcf 20%,#91cec7a8 43%,#d1a85d52 60%,transparent 76%);box-shadow:0 0 30px #c8f3ebaa,0 0 54px #68aaa56b;animation:wonqWisp var(--d) cubic-bezier(.12,.62,.2,1) var(--delay) forwards}.particle.spark{z-index:3;background:#e7c784;box-shadow:0 0 14px #f2d99f}
-@keyframes wonqStage{0%{opacity:0}7%{opacity:1}74%{opacity:.96}100%{opacity:0}}
-@keyframes wonqSmokeLeft{0%{opacity:0;transform:translate(-30%,18%) scale(.55) rotate(-12deg)}18%{opacity:.94}70%{opacity:.78}100%{opacity:0;transform:translate(23%,-13%) scale(1.48) rotate(16deg)}}
-@keyframes wonqSmokeRight{0%{opacity:0;transform:translate(31%,22%) scale(.58) rotate(14deg)}16%{opacity:.9}72%{opacity:.72}100%{opacity:0;transform:translate(-20%,-18%) scale(1.55) rotate(-18deg)}}
-@keyframes wonqWisp{0%{opacity:0;transform:translate(-50%,-50%) scale(.18) rotate(0deg)}16%{opacity:.88}70%{opacity:.62}100%{opacity:0;transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) scale(var(--grow)) rotate(var(--rot))}}
+.fx{isolation:isolate;transition:none!important;background:transparent!important;--mist1:#eefcf8;--mist2:#91cec7;--thread:#dfbd75}.fx:before,.fx:after{display:none!important}
+.fx.psychic{--mist1:#e9ffff;--mist2:#72c7ca;--thread:#b7eee8}.fx.spirit{--mist1:#fffdf4;--mist2:#9fd8cf;--thread:#e3c27d}.fx.heal{--mist1:#effff5;--mist2:#8dd2aa;--thread:#d8d991}.fx.physical{--mist1:#fff8e8;--mist2:#c8a775;--thread:#efc876}.fx.fail{--mist1:#e7eceb;--mist2:#869694;--thread:#b78672}.fx.crit{--mist1:#fffef1;--mist2:#e6ce91;--thread:#fff0a8}
+.fx.tale1{--mist1:#efffe8;--mist2:#8bc47c;--thread:#d7c276}.fx.tale2{--mist1:#fff8df;--mist2:#d9b76c;--thread:#e7eef2}.fx.tale3{--mist1:#fff1f7;--mist2:#daa1b8;--thread:#87d5bd}.fx.tale4{--mist1:#ebfeff;--mist2:#71cbd4;--thread:#d7ffff}.fx.tale5{--mist1:#fff0e9;--mist2:#c97863;--thread:#eab46e}.fx.tale6{--mist1:#fffbea;--mist2:#dfc476;--thread:#fff1ae}.fx.tale7{--mist1:#f8f0ff;--mist2:#b89acd;--thread:#86c5cf}.fx.tale8{--mist1:#dce9e7;--mist2:#527775;--thread:#b9a873}
+.fx.play{animation:wonqStage 2.7s ease-out}.fx-label{z-index:4;text-shadow:0 0 16px #fffdf0,0 0 38px var(--mist2);animation:wonqLabel 1.5s ease-out forwards}.particle.smoke-wisp{z-index:2;width:var(--w)!important;height:var(--h)!important;border-radius:42% 58% 65% 35%/58% 42% 58% 42%;filter:blur(var(--blur));opacity:0;background:radial-gradient(ellipse at 46% 20%,var(--mist1) 0 4%,color-mix(in srgb,var(--mist2) 54%,transparent) 27%,color-mix(in srgb,var(--thread) 28%,transparent) 50%,transparent 72%);box-shadow:0 0 22px color-mix(in srgb,var(--mist2) 32%,transparent);animation:wonqWisp var(--d) cubic-bezier(.22,.58,.26,1) var(--delay) forwards}.particle.spark{z-index:3;background:var(--thread);box-shadow:0 0 10px var(--thread);opacity:.65}
+@keyframes wonqStage{0%{opacity:0}8%{opacity:1}76%{opacity:.82}100%{opacity:0}}
+@keyframes wonqWisp{0%{opacity:0;transform:translate(-50%,-55%) scale(.42) rotate(var(--r0))}17%{opacity:var(--alpha)}42%{opacity:calc(var(--alpha) * .82);transform:translate(calc(-50% + var(--xm)),calc(-55% + var(--ym))) scale(.82) rotate(var(--rm))}72%{opacity:calc(var(--alpha) * .48)}100%{opacity:0;transform:translate(calc(-50% + var(--x)),calc(-55% + var(--y))) scale(var(--grow)) rotate(var(--rot))}}
 @keyframes wonqLabel{0%{opacity:0;transform:translate(-50%,-50%) scale(.72)}18%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}100%{opacity:0;transform:translate(-50%,-55%) scale(1.13)}}
 @media(prefers-reduced-motion:reduce){.fx:before,.fx:after{display:none!important}}
 `;
@@ -56,18 +55,18 @@ playFX=function(type,label){
  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
  const f=$('#fx'),box=$('#particles'),names={crit:'CRITIQUE',fail:'RATÉ',heal:'SOUFFLE VITAL',psychic:'ESPRITS',spirit:'ESPRITS',physical:'IMPACT',tale1:'INSTINCT ÉVEILLÉ',tale2:'DUELLISTE',tale3:'LIENS RETROUVÉS',tale4:'ÉCHAPPÉE',tale5:'VENGEANCE',tale6:'CŒUR HÉROÏQUE',tale7:'ENVOÛTEMENT',tale8:'SOMBRE ESPRIT'};
  f.className='fx';box.innerHTML='';$('#fxLabel').textContent=names[type]||label||'IMPACT';
- const tale=/^tale/.test(type),w=Math.max(innerWidth,700),h=Math.max(innerHeight,700),wisps=tale||type==='spirit'||type==='psychic'?30:22,sparks=tale||type==='crit'?42:28;
+ const tale=/^tale/.test(type),w=Math.max(innerWidth,700),h=Math.max(innerHeight,700),wisps=tale||type==='spirit'||type==='psychic'?22:16,sparks=tale||type==='crit'?24:14;
  for(let i=0;i<wisps;i++){
-  const p=document.createElement('i'),a=Math.random()*Math.PI*2,dist=.24*w+Math.random()*.72*w;
+  const p=document.createElement('i'),sway=(-.18+Math.random()*.36)*w,drop=.58*h+Math.random()*.62*h;
   p.className='particle smoke-wisp';
-  p.style.cssText=`left:${8+Math.random()*84}%;top:${14+Math.random()*76}%;--x:${Math.cos(a)*dist}px;--y:${Math.sin(a)*(.38*h+Math.random()*.42*h)}px;--s:${70+Math.random()*(tale?210:170)}px;--d:${1.35+Math.random()*.78}s;--delay:${Math.random()*.22}s;--blur:${9+Math.random()*18}px;--grow:${1.15+Math.random()*1.7};--rot:${-90+Math.random()*180}deg`;
+  p.style.cssText=`left:${7+Math.random()*86}%;top:${-18+Math.random()*22}%;--x:${sway}px;--y:${drop}px;--xm:${-sway*.42}px;--ym:${drop*.43}px;--w:${28+Math.random()*(tale?70:54)}px;--h:${150+Math.random()*(tale?250:190)}px;--d:${1.9+Math.random()*1.15}s;--delay:${Math.random()*.34}s;--blur:${7+Math.random()*12}px;--grow:${1.05+Math.random()*.72};--r0:${-18+Math.random()*36}deg;--rm:${-30+Math.random()*60}deg;--rot:${-42+Math.random()*84}deg;--alpha:${.2+Math.random()*.22}`;
   box.appendChild(p);
  }
  for(let i=0;i<sparks;i++){
-  const p=document.createElement('i'),a=Math.random()*Math.PI*2,dist=120+Math.random()*Math.min(w,850)*.75;
-  p.className='particle spark';p.style.cssText=`--x:${Math.cos(a)*dist}px;--y:${Math.sin(a)*dist}px;--s:${4+Math.random()*(tale?20:13)}px;--d:${.8+Math.random()*.65}s;--delay:${Math.random()*.18}s`;box.appendChild(p);
+  const p=document.createElement('i'),drift=(-.14+Math.random()*.28)*w,drop=.42*h+Math.random()*.55*h;
+  p.className='particle spark';p.style.cssText=`left:${8+Math.random()*84}%;top:${-5+Math.random()*18}%;--x:${drift}px;--y:${drop}px;--s:${3+Math.random()*(tale?9:6)}px;--d:${1.45+Math.random()*.9}s;--delay:${Math.random()*.28}s`;box.appendChild(p);
  }
  void f.offsetWidth;f.className='fx '+type+' play';
  if(navigator.vibrate)navigator.vibrate(type==='crit'?[28,18,55]:type==='fail'?[16,24,16]:tale?[14,18,32]:18);
- setTimeout(()=>{f.className='fx';box.innerHTML=''},2250);
+ setTimeout(()=>{f.className='fx';box.innerHTML=''},3150);
 };
