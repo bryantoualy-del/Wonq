@@ -18,16 +18,18 @@ const decoratePanel=(needle,name)=>{[...document.querySelectorAll('.panel')].for
 const mount=()=>{
  const nav={spells:'spell',tales:'tales',defense:'shield',resources:'vitality',social:'social'};
  Object.entries(nav).forEach(([view,name])=>{const b=document.querySelector(`.nav [data-view="${view}"]`);if(b&&!b.querySelector('.wonq-glyph'))b.insertAdjacentHTML('afterbegin',icon(name))});
- addButtonIcon(document.querySelector('#takeHeal'),'healing');
  addButtonIcon(document.querySelector('#glide'),'glide');
  addButtonIcon(document.querySelector('#hadozeeDodge'),'shield');
- addButtonIcon(document.querySelector('#giveInspiration'),'social');
+ addButtonIcon(document.querySelector('#giveInspiration'),'inspiration');
  addButtonIcon(document.querySelector('#drawTale'),'tales');
  ['#quickShort','#quickLong','#shortRest','#longRest'].forEach(s=>addButtonIcon(document.querySelector(s),'rest'));
  const concentration=document.querySelector('#turnConcentration');if(concentration&&!concentration.querySelector('.wonq-glyph'))concentration.insertAdjacentHTML('afterbegin',icon('concentration'));
  const slots=document.querySelector('#quickSpellSlots .quick-slots-label');if(slots&&!slots.querySelector('.wonq-glyph'))slots.insertAdjacentHTML('afterbegin',icon('spell'));
  decoratePanel('planeur','glide');decoratePanel('concentration','concentration');decoratePanel('esquive hadozee','shield');decoratePanel('inspiration bardique','social');decoratePanel('contes de l’au-delà','tales');decoratePanel('emplacements de sorts','spell');
- [...document.querySelectorAll('#spellGroups .spell')].forEach(card=>{if(/illusion|image silencieuse|invisibilit/i.test(card.textContent)){card.classList.add('context-panel');card.style.setProperty('--context-icon',`url('${asset('illusion')}')`)}});
+ [...document.querySelectorAll('#spellGroups .spell')].forEach(card=>{
+  if(/mot de guérison/i.test(card.textContent))addButtonIcon(card.querySelector('button'),'healing');
+  if(/illusion|image silencieuse|invisibilit/i.test(card.textContent)){card.classList.add('context-panel');card.style.setProperty('--context-icon',`url('${asset('illusion')}')`)}
+ });
 };
 mount();
 const observer=new MutationObserver(mount);observer.observe(document.body,{childList:true,subtree:true});
