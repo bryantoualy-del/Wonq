@@ -52,6 +52,9 @@ wonqFxStyle.textContent=`
 document.head.appendChild(wonqFxStyle);
 
 playFX=function(type,label){
+ /* Un échec ou une action impossible reste signalé dans le ruban et le
+    journal, sans déclencher de fumée ni de vibration. */
+ if(type==='fail')return;
  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
  const f=$('#fx'),box=$('#particles'),names={crit:'CRITIQUE',fail:'RATÉ',heal:'SOUFFLE VITAL',psychic:'ESPRITS',spirit:'ESPRITS',physical:'IMPACT',tale1:'INSTINCT ÉVEILLÉ',tale2:'DUELLISTE',tale3:'LIENS RETROUVÉS',tale4:'ÉCHAPPÉE',tale5:'VENGEANCE',tale6:'CŒUR HÉROÏQUE',tale7:'ENVOÛTEMENT',tale8:'SOMBRE ESPRIT'};
  f.className='fx';box.innerHTML='';$('#fxLabel').textContent=names[type]||label||'IMPACT';
