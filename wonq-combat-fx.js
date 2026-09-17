@@ -1,4 +1,3 @@
-
 /* Patch injecté dans le moteur historique de Wonq : ce fichier partage sa portée. */
 const resetWonqCombat=()=>{
  S.combat++;
@@ -41,9 +40,9 @@ $('#longRest').onclick=longRest;
 const wonqFxStyle=document.createElement('style');
 wonqFxStyle.textContent=`
 .fx{isolation:isolate;transition:none!important}.fx:before,.fx:after{content:'';position:absolute;inset:-28%;opacity:0;mix-blend-mode:screen;filter:blur(28px);transform:scale(.72) rotate(0deg)}
-.fx.play{animation:wonqStage 2.15s ease-out}.fx.play:before{background:radial-gradient(ellipse at 18% 72%,#62c8accc 0 5%,#438d7c88 14%,transparent 42%),radial-gradient(ellipse at 76% 30%,#ba85d7c4 0 7%,#76508e88 18%,transparent 45%),radial-gradient(ellipse at 54% 82%,#d1b27670 0 5%,transparent 36%);animation:wonqSmokeLeft 2.15s cubic-bezier(.2,.7,.25,1) forwards}
-.fx.play:after{background:radial-gradient(ellipse at 82% 72%,#6db9a5b8 0 6%,#3d766d78 20%,transparent 47%),radial-gradient(ellipse at 28% 24%,#a86bcacb 0 6%,#573d7882 20%,transparent 48%);animation:wonqSmokeRight 2.15s cubic-bezier(.2,.7,.25,1) forwards}
-.fx-label{z-index:4;text-shadow:0 0 18px #fff8d4,0 0 42px var(--fx),0 0 90px #8e62ad;animation:wonqLabel 1.35s ease-out forwards}.particle.smoke-wisp{z-index:2;border-radius:48% 52% 64% 36%;filter:blur(var(--blur));opacity:.76;background:radial-gradient(circle at 36% 34%,#d9fff0cc 0 5%,var(--fx) 24%,#7f55a788 51%,transparent 74%);box-shadow:0 0 36px var(--fx);animation:wonqWisp var(--d) cubic-bezier(.12,.62,.2,1) var(--delay) forwards}.particle.spark{z-index:3}
+.fx.play{animation:wonqStage 2.15s ease-out}.fx.play:before{background:radial-gradient(ellipse at 18% 72%,#f4fffbea 0 5%,#a8ddd4c7 15%,#599f9a73 30%,transparent 48%),radial-gradient(ellipse at 76% 30%,#eafffae8 0 6%,#9fd8d1b5 17%,#4b8c8970 32%,transparent 50%),radial-gradient(ellipse at 54% 82%,#e7c98b85 0 4%,#bd914b48 16%,transparent 38%);animation:wonqSmokeLeft 2.15s cubic-bezier(.2,.7,.25,1) forwards}
+.fx.play:after{background:radial-gradient(ellipse at 82% 72%,#f7fffceb 0 6%,#a4dcd5bd 19%,#548f8b68 34%,transparent 52%),radial-gradient(ellipse at 28% 24%,#dffaf5e2 0 6%,#8fcfc8aa 20%,#477f7d62 35%,transparent 52%),radial-gradient(ellipse at 68% 36%,#f0d39a75 0 3%,#bd8e4442 14%,transparent 34%);animation:wonqSmokeRight 2.15s cubic-bezier(.2,.7,.25,1) forwards}
+.fx-label{z-index:4;text-shadow:0 0 18px #fffdf0,0 0 42px #b6eee4,0 0 90px #68aaa5;animation:wonqLabel 1.35s ease-out forwards}.particle.smoke-wisp{z-index:2;border-radius:48% 52% 64% 36%;filter:blur(var(--blur));opacity:.76;background:radial-gradient(circle at 36% 34%,#ffffffed 0 6%,#d8f5efcf 20%,#91cec7a8 43%,#d1a85d52 60%,transparent 76%);box-shadow:0 0 30px #c8f3ebaa,0 0 54px #68aaa56b;animation:wonqWisp var(--d) cubic-bezier(.12,.62,.2,1) var(--delay) forwards}.particle.spark{z-index:3;background:#e7c784;box-shadow:0 0 14px #f2d99f}
 @keyframes wonqStage{0%{opacity:0}7%{opacity:1}74%{opacity:.96}100%{opacity:0}}
 @keyframes wonqSmokeLeft{0%{opacity:0;transform:translate(-30%,18%) scale(.55) rotate(-12deg)}18%{opacity:.94}70%{opacity:.78}100%{opacity:0;transform:translate(23%,-13%) scale(1.48) rotate(16deg)}}
 @keyframes wonqSmokeRight{0%{opacity:0;transform:translate(31%,22%) scale(.58) rotate(14deg)}16%{opacity:.9}72%{opacity:.72}100%{opacity:0;transform:translate(-20%,-18%) scale(1.55) rotate(-18deg)}}
