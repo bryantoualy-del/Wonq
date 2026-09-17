@@ -13,13 +13,14 @@
 (async()=>{
  try{
   const base='https://raw.githubusercontent.com/bryantoualy-del/Wonq/689201c0a472ebd806183b1747d3d1e481ad30ea/index.html';
-  const [baseResponse,talesResponse,combatFxResponse]=await Promise.all([fetch(base,{cache:'no-store'}),fetch('tales-aidedd.js?v=2',{cache:'no-store'}),fetch('wonq-combat-fx.js?v=1',{cache:'no-store'})]);
+  const [baseResponse,talesResponse,combatFxResponse,socialJournalResponse]=await Promise.all([fetch(base,{cache:'no-store'}),fetch('tales-aidedd.js?v=2',{cache:'no-store'}),fetch('wonq-combat-fx.js?v=1',{cache:'no-store'}),fetch('social-journal.js?v=1',{cache:'no-store'})]);
   let html=await baseResponse.text();
   const talesCode=await talesResponse.text();
   const combatFxCode=await combatFxResponse.text();
+  const socialJournalCode=await socialJournalResponse.text();
   const appEnd=html.lastIndexOf('})();');
   if(appEnd<0)throw new Error('Moteur principal introuvable');
-  html=html.slice(0,appEnd)+talesCode+combatFxCode+html.slice(appEnd);
+  html=html.slice(0,appEnd)+talesCode+combatFxCode+socialJournalCode+html.slice(appEnd);
   const quickAccessStart=html.indexOf('<article class="panel"><h2>Accès rapide</h2>');
   /* Keep the historical quick-action controls in the DOM so the legacy
      binder can attach every handler. They stay visually removed, as requested. */
