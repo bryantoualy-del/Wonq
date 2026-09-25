@@ -163,4 +163,55 @@ function sjRender(){
 }
 function sjBindRoot(root,current){
   root.querySelector('#sjStartSession')?.addEventListener('click',sjStartSession);root.querySelector('#sjEndSession')?.addEventListener('click',sjEndSession);root.querySelector('#sjBackup')?.addEventListener('click',sjBackupJSON);
-  root.querySelector('#sjAddEvent')?.addEventListener('click',()=>sjQuickEvent(current?.id));root.querySelector('#sjExportZip')?.addEventListener('click',()=>sjExportSession(current?.id));root.querySelector('#sjDeleteSession')?.addEventListener('click',()=>cur
+  root.querySelector('#sjAddEvent')?.addEventListener('click',()=>sjQuickEvent(current?.id));root.querySelector('#sjExportZip')?.addEventListener('click',()=>sjExportSession(current?.id));root.querySelector('#sjDeleteSession')?.addEventListener('click',()=>current&&sjDeleteSession(current.id));
+  root.querySelectorAll('[data-sj-session]').forEach(b=>b.onclick=()=>{selectedSessionId=b.dataset.sjSession;sjRender()});
+  root.querySelectorAll('[data-sj-edit]').forEach(b=>b.onclick=()=>sjEditEvent(b.dataset.sjEdit));root.querySelectorAll('[data-sj-delete-event]').forEach(b=>b.onclick=()=>sjDeleteEvent(b.dataset.sjDeleteEvent));
+  root.querySelectorAll('[data-sj-promote]').forEach(b=>b.onclick=()=>sjPromoteEvent(b.dataset.sjPromote));root.querySelectorAll('[data-sj-unpromote]').forEach(b=>b.onclick=()=>sjUnpromote(b.dataset.sjUnpromote));
+}
+
+function sjKnowledgeFrontmatter(shared){
+  return 'character: Wonq\ncharacter_id: wonq\nknown_by:\n  - Wonq\nknowledge_scope: character\nshared_to_party: '+(shared?'true':'false')+'\n';
+}
+function sjEventMarkdown(e){
+  const label=sjCategory(e.category),title=e.title||label;
+  return '- **'+sjTime(e.createdAt)+' · '+label+' — '+title+'**\n  '+e.body.replace(/\r?\n/g,'\n  ')+'\n  - Connu par : **Wonq**'+(e.sharedWithParty?' · communiqué au groupe':'')+(e.promoted?' · fiche préparée : **'+e.promoted.name+'**':'');
+}
+function sjSessionMarkdown(session,events){
+  const ended=session.endedAt?'\nended_at: '+sjYaml(session.endedAt):'';
+  return '---\ntype: session\nschema: '+SESSION_SCHEMA+'\n'+sjKnowledgeFrontmatter(false)+'title: '+sjYaml(session.title)+'\ndate: '+sjIsoDate(session.startedAt)+'\nstarted_at: '+sjYaml(session.startedAt)+ended+'\nstatus: '+session.status+'\n---\n\n# '+session.title+'\n\n> Point de vue : **Wonq**. Cette note ne constitue pas une connaissance de Kentaro.\n\n## Événements\n\n'+(events.length?events.map(sjEventMarkdown).join('\n\n'):'_Aucun événement noté._')+'\n';
+}
+function sjEntityFolder(kind){return {npc:'21 - PNJ',place:'22 - Lieux',faction:'23 - Factions',item:'24 - Objets',quest:'25 - Quêtes'}[kind]||'30 - Lore'}
+function sjEntityMarkdown(e,session){
+  const p=e.promoted,name=p.name;
+  return '---\ntype: '+p.kind+'\nschema: '+SESSION_SCHEMA+'\n'+sjKnowledgeFrontmatter(e.sharedWithParty)+'name: '+sjYaml(name)+'\nsource_session: '+sjYaml(session.title)+'\nsource_character: Wonq\ncanon_status: unverified-character-knowledge\n---\n\n# '+name+'\n\n> **Connaissance de Wonq uniquement.** Cette fiche n’enrichit pas automatiquement la mémoire de Kentaro ni une fiche canonique globale.\n\n## Ce que Wonq sait\n\n'+e.body+'\n\n## Source\n\n- Session : [['+session.title+']]\n- Noté le : '+sjDate(e.createdAt)+' à '+sjTime(e.createdAt)+'\n- Partagé au groupe : '+(e.sharedWithParty?'oui':'non')+'\n';
+}
+function sjExportFiles(session){
+  const events=sjEvents(session.id),date=sjIsoDate(session.startedAt),sessionName=sjSlug(session.title),files=[];
+  const sessionTarget='10 - Sessions/Wonq/'+date+' — '+sessionName+'.md';
+  files.push({source:'Contenu/'+sessionTarget,target:sessionTarget,kind:'session',character:'wonq',content:sjSessionMarkdown(session,events)});
+  events.filter(e=>e.promoted&&PROMOTABLE.has(e.promoted.kind)).forEach(e=>{
+    const target=sjEntityFolder(e.promoted.kind)+'/Wonq/'+sjSlug(e.promoted.name)+' — point de vue Wonq.md';
+    files.push({source:'Contenu/'+target,target:target,kind:e.promoted.kind,character:'wonq',content:sjEntityMarkdown(e,session)});
+  });
+  const manifest={
+    format:'kentaro-session-import',version:4,schema:'kentaro-session-import-v4',generatedAt:sjNow(),mode:'delta',conflictPolicy:'skip-existing',
+    source:{app:'wonq-companion',characterId:'wonq',characterName:'Wonq',knowledgeIsolation:true},
+    session:{id:session.id,title:session.title,date:date,status:session.status},
+    rules:{characterScopedKnowledge:true,doNotPropagateTo:['kentaro'],promoteOnlyExplicit:true},
+    files:files.map(f=>({source:f.source,path:f.source,sourcePath:f.source,target:f.target,destination:f.target,vaultPath:f.target,route:f.target,kind:f.kind,character:f.character,overwrite:false})),
+    items:files.map(f=>({source:f.source,target:f.target,type:f.kind,overwrite:false})),
+    routes:Object.fromEntries(files.map(f=>[f.source,f.target]))
+  };
+  return [{name:'_kentaro-import.json',content:JSON.stringify(manifest,null,2)}].concat(files.map(f=>({name:f.source,content:f.content})));
+}
+
+function sjCrc32(bytes){
+  let c=0xffffffff;for(let i=0;i<bytes.length;i++){c^=bytes[i];for(let j=0;j<8;j++)c=(c>>>1)^((c&1)?0xedb88320:0)}return (c^0xffffffff)>>>0;
+}
+function sjU16(n){const b=new Uint8Array(2);new DataView(b.buffer).setUint16(0,n,true);return b}
+function sjU32(n){const b=new Uint8Array(4);new DataView(b.buffer).setUint32(0,n>>>0,true);return b}
+function sjConcat(parts){const len=parts.reduce((n,p)=>n+p.length,0),out=new Uint8Array(len);let o=0;parts.forEach(p=>{out.set(p,o);o+=p.length});return out}
+function sjDosDate(d){const year=Math.max(1980,d.getFullYear());return ((year-1980)<<9)|((d.getMonth()+1)<<5)|d.getDate()}
+function sjDosTime(d){return (d.getHours()<<11)|(d.getMinutes()<<5)|(d.getSeconds()>>1)}
+function sjMakeZip(files){
+  const enc=new TextEncoder(),locals=[],centrals=[];let offset=0;co
