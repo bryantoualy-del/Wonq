@@ -132,4 +132,35 @@ function sjEditEvent(id,sessionId,focusBody){
     const idx=S.sessionEvents.findIndex(x=>x.id===e.id);idx<0?S.sessionEvents.push(e):S.sessionEvents[idx]=e;save();selectedSessionId=e.sessionId;sjRender();sjNotify('Événement noté',e.title||sjCategory(e.category));
   },form=>{if(focusBody)setTimeout(()=>form.querySelector('[name="body"]')?.focus(),60)});
 }
-function sjDeleteEve
+function sjDeleteEvent(id){
+  const e=S.sessionEvents.find(x=>x.id===id);if(!e)return;if(!confirm('Retirer cet événement de la session ?'))return;e.deleted=true;e.updatedAt=sjNow();save();sjRender();
+}
+function sjPromoteEvent(id){
+  const e=S.sessionEvents.find(x=>x.id===id);if(!e||!PROMOTABLE.has(e.category))return;
+  const proposed=e.promoted?.name||e.title||e.body.slice(0,70);
+  sjOpenEditor(e.promoted?'Modifier la fiche préparée':'Préparer une fiche','<label>Nom de la fiche<input class="number" name="name" value="'+sjEsc(proposed)+'" required></label><p class="meta">La fiche sera exportée comme <b>connaissance de Wonq</b>, séparée d’une éventuelle fiche canonique ou d’une fiche connue de Kentaro.</p><button class="primary teal" value="save">'+(e.promoted?'Mettre à jour':'Préparer la fiche')+'</button>',fd=>{
+    e.promoted={kind:e.category,name:String(fd.get('name')||'').trim(),createdAt:e.promoted?.createdAt||sjNow(),updatedAt:sjNow()};e.updatedAt=sjNow();save();sjRender();sjNotify('Fiche préparée',e.promoted.name);
+  });
+}
+function sjUnpromote(id){const e=S.sessionEvents.find(x=>x.id===id);if(!e)return;e.promoted=null;e.updatedAt=sjNow();save();sjRender()}
+
+function sjRender(){
+  sjEnsureState();sjInstallShell();sjUpdatePill();
+  const root=document.getElementById('sessionMount');if(!root)return;
+  const active=sjActive();const sessions=S.playSessions.slice().sort((a,b)=>String(b.startedAt).localeCompare(String(a.startedAt)));
+  if(selectedSessionId&&!sjSession(selectedSessionId))selectedSessionId=active?.id||sessions[0]?.id||null;
+  const current=sjSession(selectedSessionId)||active||sessions[0]||null;
+  const sessionTabs=sessions.map(x=>'<button class="state '+(current?.id===x.id?'on':'')+'" data-sj-session="'+x.id+'">'+sjEsc(x.title)+(x.status==='active'?' · active':'')+'</button>').join('');
+  const header='<div class="sj-session-head"><div><div class="eyebrow">Mémoire cloisonnée par personnage</div><h2>Session de Wonq</h2><p class="meta">Ce journal décrit ce que <b>Wonq</b> vit ou apprend. Rien n’est transféré à Kentaro sans décision explicite.</p></div><div class="sj-session-actions">'+(active?'<button class="ability" id="sjEndSession">Terminer la session</button>':'<button class="primary teal" id="sjStartSession">Démarrer une session</button>')+'<button class="ability" id="sjBackup">Sauvegarde JSON</button></div></div>';
+  if(!current){root.innerHTML=header+'<div class="sj-empty"><b>Aucune session enregistrée.</b><span>Démarre la session puis utilise « ✎ Événement » pendant la partie.</span></div>';sjBindRoot(root);return}
+  const events=sjEvents(current.id);
+  const cards=events.map(e=>{
+    const promote=PROMOTABLE.has(e.category)?'<button class="ability" data-sj-promote="'+e.id+'">'+(e.promoted?'Fiche ✓':'Préparer fiche')+'</button>':'';
+    return '<article class="sj-event-card"><div class="sj-event-meta"><span class="badge">'+sjEsc(sjCategory(e.category))+'</span><span>'+sjEsc(sjTime(e.createdAt))+'</span><span class="sj-knowledge">Connu : Wonq</span>'+(e.sharedWithParty?'<span class="badge">Partagé au groupe</span>':'')+'</div><h3>'+sjEsc(e.title||sjCategory(e.category))+'</h3><p>'+sjEsc(e.body)+'</p>'+(e.promoted?'<div class="sj-promoted">↳ Fiche Wonq préparée : <b>'+sjEsc(e.promoted.name)+'</b></div>':'')+'<div class="row"><button class="ability" data-sj-edit="'+e.id+'">Modifier</button>'+promote+(e.promoted?'<button class="ability" data-sj-unpromote="'+e.id+'">Annuler fiche</button>':'')+'<button class="ability" data-sj-delete-event="'+e.id+'">Retirer</button></div></article>';
+  }).join('')||'<div class="sj-empty"><b>Aucun événement.</b><span>Le bouton flottant « ✎ Événement » reste disponible pendant toute la partie.</span></div>';
+  root.innerHTML=header+'<div class="sj-session-tabs">'+sessionTabs+'</div><div class="sj-current"><div><div class="eyebrow">'+sjEsc(sjDate(current.startedAt))+'</div><h2>'+sjEsc(current.title)+'</h2><div class="badges"><span class="badge">Point de vue : Wonq</span><span class="badge">'+events.length+' événement'+(events.length>1?'s':'')+'</span><span class="badge">'+(current.status==='active'?'En cours':'Archivée')+'</span></div></div><div class="sj-current-actions"><button class="primary teal" id="sjAddEvent">✎ Ajouter un événement</button><button class="ability" id="sjExportZip">Exporter vers Obsidian</button><button class="ability" id="sjDeleteSession">Supprimer</button></div></div><div class="sj-event-list">'+cards+'</div>';
+  sjBindRoot(root,current);
+}
+function sjBindRoot(root,current){
+  root.querySelector('#sjStartSession')?.addEventListener('click',sjStartSession);root.querySelector('#sjEndSession')?.addEventListener('click',sjEndSession);root.querySelector('#sjBackup')?.addEventListener('click',sjBackupJSON);
+  root.querySelector('#sjAddEvent')?.addEventListener('click',()=>sjQuickEvent(current?.id));root.querySelector('#sjExportZip')?.addEventListener('click',()=>sjExportSession(current?.id));root.querySelector('#sjDeleteSession')?.addEventListener('click',()=>cur
