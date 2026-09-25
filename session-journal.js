@@ -12,6 +12,8 @@ const EVENT_TYPES=[
 ];
 const PROMOTABLE=new Set(['npc','place','quest','item','faction']);
 let selectedSessionId=null;
+let sjJournalMode=true;
+let sjJournalBridgeInstalled=false;
 
 const sjEsc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sjUid=()=>{try{return crypto.randomUUID()}catch(e){return 'sj-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,9)}};
@@ -50,6 +52,38 @@ function sjEvents(id){return S.sessionEvents.filter(x=>x.sessionId===id&&!x.dele
 function sjCategory(id){return EVENT_TYPES.find(x=>x[0]===id)?.[1]||'Événement'}
 function sjNotify(title,text){try{showRibbon(title,text)}catch(e){}}
 
+function sjIntegrateJournal(){
+  const journal=document.getElementById('journal'),grid=journal?.querySelector(':scope > .grid'),controls=document.getElementById('journalModeTabs');
+  if(!journal||!grid)return;
+  document.getElementById('session')?.remove();
+  document.querySelector('.nav [data-view="session"]')?.remove();
+
+  let notebook=document.getElementById('sessionNotebook');
+  if(!notebook){
+    notebook=document.createElement('div');notebook.id='sessionNotebook';
+    notebook.innerHTML='<div class="grid"><article class="panel full"><div id="sessionMount"></div></article></div>';
+    grid.parentNode.insertBefore(notebook,grid);
+  }
+  if(controls&&!controls.querySelector('[data-sj-journal-mode="session"]')){
+    const b=document.createElement('button');b.className='ability';b.dataset.sjJournalMode='session';b.textContent='Session';
+    controls.insertBefore(b,controls.firstChild);
+    b.onclick=()=>{sjJournalMode=true;sjIntegrateJournal();sjRender()};
+  }
+  if(controls){
+    const sb=controls.querySelector('[data-sj-journal-mode="session"]');
+    if(sjJournalMode){
+      controls.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===sb));
+    }else if(sb){
+      sb.classList.remove('on');
+    }
+  }
+  const notes=document.getElementById('personalNotebook');
+  notebook.hidden=!sjJournalMode;
+  if(sjJournalMode){
+    grid.hidden=true;
+    if(notes)notes.hidden=true;
+  }
+}
 function sjInstallShell(){
   if(!document.getElementById('wonqSessionEditor')){
     const d=document.createElement('dialog');
@@ -67,22 +101,21 @@ function sjInstallShell(){
     const bar=document.querySelector('.statebar');if(bar)bar.appendChild(b);
     b.onclick=()=>sjOpenSessionView();
   }
-  if(!document.getElementById('session')){
-    const section=document.createElement('section');section.className='view';section.id='session';
-    section.innerHTML='<div class="grid"><article class="panel full"><div id="sessionMount"></div></article></div>';
-    const journal=document.getElementById('journal');journal?.parentNode?.insertBefore(section,journal);
+  if(!sjJournalBridgeInstalled){
+    sjJournalBridgeInstalled=true;
+    document.addEventListener('click',e=>{
+      if(e.target.closest?.('[data-journal-mode]')){
+        sjJournalMode=false;
+        setTimeout(()=>{sjIntegrateJournal();sjRender()},0);
+      }
+    });
   }
-  if(!document.querySelector('.nav [data-view="session"]')){
-    const b=document.createElement('button');b.dataset.view='session';b.textContent='Session';
-    const nav=document.querySelector('.nav'),journalButton=document.querySelector('.nav [data-view="journal"]');
-    if(nav)nav.insertBefore(b,journalButton||null);
-    b.onclick=()=>sjOpenSessionView();
-  }
+  sjIntegrateJournal();
 }
 function sjOpenSessionView(){
-  document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.view==='session'));
-  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='session'));
-  sjRender();scrollTo({top:0,behavior:'smooth'});
+  document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.view==='journal'));
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='journal'));
+  sjJournalMode=true;sjIntegrateJournal();sjRender();scrollTo({top:0,behavior:'smooth'});
 }
 function sjUpdatePill(){
   const b=document.getElementById('sessionStateQuick');if(!b)return;
