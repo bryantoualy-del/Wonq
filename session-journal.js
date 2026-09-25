@@ -162,7 +162,7 @@ function sjRender(){
   sjBindRoot(root,current);
 }
 function sjBindRoot(root,current){
-  root.querySelector('#sjStartSession')?.addEventListener('click',sjStartSession);root.querySelector('#sjEndSession')?.addEventListener('click',sjEndSession);root.querySelector('#sjBackup')?.addEventListener('click',sjBackupJSON);
+  root.querySelector('#sjStartSession')?.addEventListener('click',()=>sjStartSession(false));root.querySelector('#sjEndSession')?.addEventListener('click',sjEndSession);root.querySelector('#sjBackup')?.addEventListener('click',sjBackupJSON);
   root.querySelector('#sjAddEvent')?.addEventListener('click',()=>sjQuickEvent(current?.id));root.querySelector('#sjExportZip')?.addEventListener('click',()=>sjExportSession(current?.id));root.querySelector('#sjDeleteSession')?.addEventListener('click',()=>current&&sjDeleteSession(current.id));
   root.querySelectorAll('[data-sj-session]').forEach(b=>b.onclick=()=>{selectedSessionId=b.dataset.sjSession;sjRender()});
   root.querySelectorAll('[data-sj-edit]').forEach(b=>b.onclick=()=>sjEditEvent(b.dataset.sjEdit));root.querySelectorAll('[data-sj-delete-event]').forEach(b=>b.onclick=()=>sjDeleteEvent(b.dataset.sjDeleteEvent));
