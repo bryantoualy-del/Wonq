@@ -1,6 +1,6 @@
 /* Wonq — Carnet de session & export Obsidian
-   Une seule source de vérité : les notes du beau carnet sont les notes de session.
-   Toutes les connaissances sont cloisonnées au personnage Wonq par défaut. */
+   Source de vérité unique : les notes du carnet sont les notes de session.
+   Connaissances cloisonnées par personnage : Wonq != Kentaro. */
 (()=>{
 'use strict';
 
@@ -13,6 +13,7 @@ const SJ_EXTRA_CATEGORIES=[
 ];
 const SJ_PROMOTABLE=new Set(['people','places','quest','items','factions']);
 let sjSelectedSessionId=null;
+let sjBridge=null;
 
 const sjUid=()=>{try{return crypto.randomUUID()}catch(e){return 'sj-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,9)}};
 const sjNow=()=>new Date().toISOString();
@@ -22,7 +23,9 @@ const sjTime=iso=>{const d=iso?new Date(iso):new Date();return d.toLocaleTimeStr
 const sjIsoDate=iso=>{const d=iso?new Date(iso):new Date(),y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return y+'-'+m+'-'+day};
 const sjSlug=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[\\/:*?"<>|]/g,' ').replace(/\s+/g,' ').trim().slice(0,110)||'Sans titre';
 const sjYaml=s=>'"'+String(s??'').replace(/\\/g,'\\\\').replace(/"/g,'\\"').replace(/\r?\n/g,' ')+'"';
-const sjCat=id=>S.noteCategories.find(c=>c.id===id)||{id:id,name:'Sans catégorie',color:'#777'};
+const sjEsc=s=>sjBridge?.esc?sjBridge.esc(s):String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sjCategories=()=>Array.isArray(S.noteCategories)?S.noteCategories:[];
+const sjCat=id=>sjCategories().find(c=>c.id===id)||{id:id,name:'Sans catégorie',color:'#777'};
 const sjMapEventCategory=id=>({npc:'people',place:'places',quest:'quest',clue:'clues',item:'items',faction:'factions',memory:'memory',event:'event'}[id]||'event');
 
 function sjEnsureState(){
@@ -38,7 +41,7 @@ function sjEnsureState(){
  });
  if(S.activePlaySessionId&&!S.playSessions.some(x=>x.id===S.activePlaySessionId&&x.status==='active'))S.activePlaySessionId='';
 
- // Migration from the first Session prototype: old session events become notebook notes once.
+ // Migration transparente du prototype "Événements" vers le vrai carnet.
  if(Array.isArray(S.sessionEvents)&&S.sessionEvents.length){
   S.sessionEvents.filter(e=>!e.deleted&&!S.personalNotes.some(n=>n.migratedSessionEventId===e.id)).forEach(e=>{
    S.personalNotes.push({
@@ -51,7 +54,7 @@ function sjEnsureState(){
   });
  }
 
- // Old personal notes are preserved and grouped into an archive session instead of becoming orphaned.
+ // Les anciennes notes libres restent accessibles, regroupées dans une session archive.
  const legacy=S.personalNotes.filter(n=>!n.sessionId);
  if(legacy.length){
   let archive=S.playSessions.find(x=>x.id==='wonq-legacy-notes');
@@ -60,7 +63,7 @@ function sjEnsureState(){
    archive={id:'wonq-legacy-notes',title:'Carnet antérieur de Wonq',characterId:'wonq',startedAt:first,endedAt:first,status:'ended',schema:SJ_SCHEMA};
    S.playSessions.push(archive);
   }
-  legacy.forEach(n=>n.sessionId=archive.id);
+  legacy.forEach(n=>{n.sessionId=archive.id;if(!n.session)n.session=sjIsoDate(archive.startedAt)});
  }
 
  S.personalNotes.forEach(n=>{
@@ -78,9 +81,7 @@ function sjEnsureState(){
 function sjSession(id){return S.playSessions.find(x=>x.id===id)||null}
 function sjActive(){return sjSession(S.activePlaySessionId)}
 function sjCurrent(){return sjSession(sjSelectedSessionId)||sjActive()||S.playSessions.slice().sort((a,b)=>String(b.startedAt).localeCompare(String(a.startedAt)))[0]||null}
-function sjNotes(sessionId,deleted){
- return S.personalNotes.filter(n=>n.sessionId===sessionId&&!!n.deleted===!!deleted);
-}
+function sjNotes(sessionId,deleted){return S.personalNotes.filter(n=>n.sessionId===sessionId&&!!n.deleted===!!deleted)}
 function sjNotify(title,text){try{showRibbon(title,text)}catch(e){}}
 
 function sjInstall(){
@@ -112,26 +113,29 @@ function sjUpdatePill(){
 function sjOpenJournal(){
  document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.view==='journal'));
  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='journal'));
- journalTab='notes';enhanceJournal();scrollTo({top:0,behavior:'smooth'});
+ const b=sjBridge||window.WonqJournalBridge;
+ if(b){b.setTab('notes');b.rerender()}
+ scrollTo({top:0,behavior:'smooth'});
 }
 
 function sjStartSession(openNoteAfter){
- openEditor('Démarrer une session',
-  '<label>Nom de la session<input class="number" name="title" value="Session Wonq — '+esc(sjDate())+'" required></label>'+
+ const b=sjBridge||window.WonqJournalBridge;if(!b)return;
+ b.openEditor('Démarrer une session',
+  '<label>Nom de la session<input class="number" name="title" value="Session Wonq — '+sjEsc(sjDate())+'" required></label>'+
   '<p class="meta">Cette session appartient au point de vue de <b>Wonq</b>. Elle ne transmet aucune connaissance à Kentaro.</p>'+
   '<button class="primary teal" value="save">Démarrer</button>',
   fd=>{
    const old=sjActive();if(old){old.status='ended';old.endedAt=sjNow()}
    const x={id:sjUid(),title:String(fd.get('title')||'Session Wonq').trim(),characterId:'wonq',startedAt:sjNow(),endedAt:null,status:'active',schema:SJ_SCHEMA};
-   S.playSessions.push(x);S.activePlaySessionId=x.id;sjSelectedSessionId=x.id;save();enhanceJournal();sjUpdatePill();sjNotify('Session démarrée',x.title);
-   if(openNoteAfter)setTimeout(()=>sjEditNote(null,x.id,true),80);
+   S.playSessions.push(x);S.activePlaySessionId=x.id;sjSelectedSessionId=x.id;save();b.rerender();sjUpdatePill();sjNotify('Session démarrée',x.title);
+   if(openNoteAfter)setTimeout(()=>sjEditNote(null,x.id,true),100);
   }
  );
 }
 function sjEndSession(){
  const a=sjActive();if(!a)return;
  if(!confirm('Terminer la session « '+a.title+' » ? Les notes restent dans le carnet.'))return;
- a.status='ended';a.endedAt=sjNow();S.activePlaySessionId='';sjSelectedSessionId=a.id;save();enhanceJournal();sjUpdatePill();sjNotify('Session terminée',a.title);
+ a.status='ended';a.endedAt=sjNow();S.activePlaySessionId='';sjSelectedSessionId=a.id;save();sjBridge?.rerender();sjUpdatePill();sjNotify('Session terminée',a.title);
 }
 function sjDeleteSession(id){
  const s=sjSession(id);if(!s)return;
@@ -140,7 +144,7 @@ function sjDeleteSession(id){
  S.personalNotes=S.personalNotes.filter(n=>n.sessionId!==id);
  if(S.activePlaySessionId===id)S.activePlaySessionId='';
  sjSelectedSessionId=S.activePlaySessionId||S.playSessions[0]?.id||null;
- save();enhanceJournal();sjUpdatePill();
+ save();sjBridge?.rerender();sjUpdatePill();
 }
 function sjQuickNote(){
  sjEnsureState();
@@ -150,23 +154,23 @@ function sjQuickNote(){
 }
 
 function sjEditNote(id,sessionId,focusBody){
- const existing=S.personalNotes.find(x=>x.id===id);
- const current=sjSession(sessionId)||sjCurrent()||sjActive();
+ const b=sjBridge||window.WonqJournalBridge;if(!b)return;
+ const existing=S.personalNotes.find(x=>x.id===id),current=sjSession(sessionId)||sjCurrent()||sjActive();
  if(!existing&&!current){sjStartSession(true);return}
  const n=sjClone(existing||{
   id:sjUid(),title:'',body:'',category:'event',tags:'',favorite:false,
   session:sjIsoDate(current.startedAt),sessionId:current.id,created:sjNow(),updated:sjNow(),
   deleted:false,knownBy:['wonq'],sharedWithParty:false,promoted:null
  });
- const sessions=S.playSessions.slice().sort((a,b)=>String(b.startedAt).localeCompare(String(a.startedAt)));
- const sessionOptions=sessions.map(s=>'<option value="'+s.id+'" '+(n.sessionId===s.id?'selected':'')+'>'+esc(s.title)+'</option>').join('');
+ const sessions=S.playSessions.slice().sort((a,c)=>String(c.startedAt).localeCompare(String(a.startedAt)));
+ const sessionOptions=sessions.map(s=>'<option value="'+s.id+'" '+(n.sessionId===s.id?'selected':'')+'>'+sjEsc(s.title)+'</option>').join('');
  const promoteAllowed=SJ_PROMOTABLE.has(n.category);
- openEditor(n.deleted?'Souvenir effacé':'Écrire dans le carnet',
-  '<label>Titre<input class="number" name="title" value="'+esc(n.title)+'" placeholder="Ex. Un nom dans la fumée"></label>'+
-  '<label>Catégorie<select name="category">'+S.noteCategories.map(c=>'<option value="'+c.id+'" '+(c.id===n.category?'selected':'')+'>'+esc(c.name)+'</option>').join('')+'</select></label>'+
+ b.openEditor(n.deleted?'Souvenir effacé':'Écrire dans le carnet',
+  '<label>Titre<input class="number" name="title" value="'+sjEsc(n.title)+'" placeholder="Ex. Un nom dans la fumée"></label>'+
+  '<label>Catégorie<select name="category">'+sjCategories().map(c=>'<option value="'+c.id+'" '+(c.id===n.category?'selected':'')+'>'+sjEsc(c.name)+'</option>').join('')+'</select></label>'+
   '<label>Session<select name="sessionId">'+sessionOptions+'</select></label>'+
-  '<label>Note<textarea class="note-editor" name="body" placeholder="Ce que Wonq veut garder…">'+esc(n.body)+'</textarea></label>'+
-  '<label>Étiquettes<input class="number" name="tags" value="'+esc(n.tags||'')+'" placeholder="séparées par des virgules"></label>'+
+  '<label>Note<textarea class="note-editor" name="body" placeholder="Ce que Wonq veut garder…">'+sjEsc(n.body)+'</textarea></label>'+
+  '<label>Étiquettes<input class="number" name="tags" value="'+sjEsc(n.tags||'')+'" placeholder="séparées par des virgules"></label>'+
   '<label class="toggle"><input type="checkbox" name="shared" '+(n.sharedWithParty?'checked':'')+'> Wonq a partagé cette information au groupe</label>'+
   '<label class="toggle"><input type="checkbox" name="favorite" '+(n.favorite?'checked':'')+'> Favori</label>'+
   '<p class="meta">Connu par <b>Wonq</b>. Même partagé au groupe, cette note ne devient jamais automatiquement une connaissance de Kentaro.</p>'+
@@ -177,15 +181,16 @@ function sjEditNote(id,sessionId,focusBody){
    let timer;
    const autosave=()=>{clearTimeout(timer);timer=setTimeout(()=>{sjPersistNote(n,new FormData(form),false);const x=document.getElementById('autoSaveState');if(x)x.textContent='Enregistré sur cet appareil'},180)};
    form.oninput=autosave;form.onchange=autosave;
-   document.getElementById('sjToggleNoteDelete').onclick=()=>{n.deleted=!n.deleted;sjPersistNote(n,new FormData(form),false);document.getElementById('wonqEditor').close();enhanceJournal()};
-   const p=document.getElementById('sjPromoteNote');if(p)p.onclick=()=>{sjPersistNote(n,new FormData(form),false);sjPromoteNote(n.id)};
+   const del=document.getElementById('sjToggleNoteDelete');
+   if(del)del.onclick=()=>{n.deleted=!n.deleted;sjPersistNote(n,new FormData(form),false);document.getElementById('wonqEditor')?.close();b.rerender()};
+   const p=document.getElementById('sjPromoteNote');
+   if(p)p.onclick=()=>{sjPersistNote(n,new FormData(form),false);document.getElementById('wonqEditor')?.close();setTimeout(()=>sjPromoteNote(n.id),60)};
    if(focusBody)setTimeout(()=>form.querySelector('[name="body"]')?.focus(),60);
   }
  );
 }
 function sjPersistNote(n,fd,rerender){
- const sid=String(fd.get('sessionId')||n.sessionId||sjActive()?.id||'');
- const session=sjSession(sid);
+ const sid=String(fd.get('sessionId')||n.sessionId||sjActive()?.id||''),session=sjSession(sid);
  Object.assign(n,{
   title:String(fd.get('title')||''),body:String(fd.get('body')||''),category:String(fd.get('category')||'event'),
   tags:String(fd.get('tags')||''),favorite:fd.has('favorite'),sharedWithParty:fd.has('shared'),
@@ -193,54 +198,59 @@ function sjPersistNote(n,fd,rerender){
  });
  if(!n.created)n.created=n.updated;
  const i=S.personalNotes.findIndex(x=>x.id===n.id);i<0?S.personalNotes.push(sjClone(n)):S.personalNotes[i]=sjClone(n);
- save();if(rerender)enhanceJournal();
+ save();if(rerender)(sjBridge||window.WonqJournalBridge)?.rerender();
 }
 function sjPromoteNote(id){
+ const b=sjBridge||window.WonqJournalBridge;if(!b)return;
  const n=S.personalNotes.find(x=>x.id===id);if(!n||!SJ_PROMOTABLE.has(n.category))return;
  const proposed=n.promoted?.name||n.title||n.body.slice(0,70);
- openEditor(n.promoted?'Modifier la fiche préparée':'Préparer une fiche',
-  '<label>Nom de la fiche<input class="number" name="name" value="'+esc(proposed)+'" required></label>'+
+ b.openEditor(n.promoted?'Modifier la fiche préparée':'Préparer une fiche',
+  '<label>Nom de la fiche<input class="number" name="name" value="'+sjEsc(proposed)+'" required></label>'+
   '<p class="meta">Cette fiche restera une <b>connaissance de Wonq</b>, séparée d’une éventuelle fiche canonique ou connue de Kentaro.</p>'+
   '<button class="primary teal" value="save">'+(n.promoted?'Mettre à jour':'Préparer la fiche')+'</button>',
-  fd=>{n.promoted={kind:n.category,name:String(fd.get('name')||'').trim(),createdAt:n.promoted?.createdAt||sjNow(),updatedAt:sjNow()};n.updated=sjNow();save();enhanceJournal();sjNotify('Fiche préparée',n.promoted.name)}
+  fd=>{n.promoted={kind:n.category,name:String(fd.get('name')||'').trim(),createdAt:n.promoted?.createdAt||sjNow(),updatedAt:sjNow()};n.updated=sjNow();save();b.rerender();sjNotify('Fiche préparée',n.promoted.name)}
  );
 }
 
-function sjRenderJournal(){
+function sjRenderJournal(bridge){
+ sjBridge=bridge||sjBridge||window.WonqJournalBridge;
  sjEnsureState();sjInstall();
- const view=document.getElementById('journal'),grid=view?.querySelector(':scope > .grid');if(!grid)return;
+ const view=document.getElementById('journal'),grid=view?.querySelector(':scope > .grid');if(!grid||!sjBridge)return;
+
  let controls=document.getElementById('journalModeTabs');
  if(!controls){controls=document.createElement('div');controls.id='journalModeTabs';controls.className='social-tabs';grid.before(controls)}
+ const tab=sjBridge.getTab();
  controls.innerHTML=
-  '<button class="ability '+(journalTab==='notes'?'on':'')+'" data-journal-mode="notes">Carnet de session</button>'+
-  '<button class="ability '+(journalTab==='history'?'on':'')+'" data-journal-mode="history">Historique automatique</button>'+
-  '<button class="ability '+(journalTab==='trash'?'on':'')+'" data-journal-mode="trash">Corbeille</button>';
- controls.querySelectorAll('[data-journal-mode]').forEach(b=>b.onclick=()=>{journalTab=b.dataset.journalMode;sjRenderJournal()});
+  '<button class="ability '+(tab==='notes'?'on':'')+'" data-journal-mode="notes">Carnet de session</button>'+
+  '<button class="ability '+(tab==='history'?'on':'')+'" data-journal-mode="history">Historique automatique</button>'+
+  '<button class="ability '+(tab==='trash'?'on':'')+'" data-journal-mode="trash">Corbeille</button>';
+ controls.querySelectorAll('[data-journal-mode]').forEach(btn=>btn.onclick=()=>{sjBridge.setTab(btn.dataset.journalMode);sjRenderJournal(sjBridge)});
 
  let notes=document.getElementById('personalNotebook');
  if(!notes){notes=document.createElement('div');notes.id='personalNotebook';grid.before(notes)}
- grid.hidden=journalTab!=='history';notes.hidden=journalTab==='history';
- if(journalTab==='history')return;
+ grid.hidden=tab!=='history';notes.hidden=tab==='history';
+ if(tab==='history')return;
 
- const sessions=S.playSessions.slice().sort((a,b)=>String(b.startedAt).localeCompare(String(a.startedAt)));
+ const sessions=S.playSessions.slice().sort((a,c)=>String(c.startedAt).localeCompare(String(a.startedAt)));
  if(sjSelectedSessionId&&!sjSession(sjSelectedSessionId))sjSelectedSessionId=sjActive()?.id||sessions[0]?.id||null;
- const current=sjCurrent(),deleted=journalTab==='trash';
- const sessionTabs=sessions.map(s=>'<button class="state '+(current?.id===s.id?'on':'')+'" data-sj-session="'+s.id+'">'+esc(s.title)+(s.status==='active'?' · active':'')+'</button>').join('');
+ const current=sjCurrent(),deleted=tab==='trash';
+ const sessionTabs=sessions.map(s=>'<button class="state '+(current?.id===s.id?'on':'')+'" data-sj-session="'+s.id+'">'+sjEsc(s.title)+(s.status==='active'?' · active':'')+'</button>').join('');
 
  if(!current){
   notes.innerHTML='<article class="panel full"><div class="journal-head"><div><div class="eyebrow">Les traces que l’on garde</div><h2>Journal du voyage</h2></div><div class="journal-tools"><button class="primary teal" id="sjStartSession">Démarrer une session</button></div></div><div class="empty">Le carnet attend sa première session.</div></article>';
   document.getElementById('sjStartSession').onclick=()=>sjStartSession(false);return;
  }
 
+ const search=sjBridge.getSearch().toLowerCase(),filter=sjBridge.getFilter();
  const list=sjNotes(current.id,deleted)
-  .filter(n=>(n.title+' '+n.body+' '+(n.tags||'')).toLowerCase().includes(noteSearch.toLowerCase())&&(!noteFilter||noteFilter==='favorite'&&n.favorite||noteFilter===n.category))
-  .sort((a,b)=>(b.favorite-a.favorite)||String(b.updated).localeCompare(String(a.updated)));
+  .filter(n=>(n.title+' '+n.body+' '+(n.tags||'')).toLowerCase().includes(search)&&(!filter||filter==='favorite'&&n.favorite||filter===n.category))
+  .sort((a,c)=>(c.favorite-a.favorite)||String(c.updated).localeCompare(String(a.updated)));
 
  const cards=list.map(n=>
   '<button class="personal-note" data-note="'+n.id+'">'+
-   '<strong>'+(n.favorite?'★ ':'')+esc(n.title||'Sans titre')+'</strong>'+
-   '<small>'+esc(sjCat(n.category).name)+' · '+esc(sjTime(n.created||n.updated))+(n.sharedWithParty?' · partagé':'')+'</small>'+
-   '<p>'+esc((n.body||'').slice(0,150))+'</p>'+
+   '<strong>'+(n.favorite?'★ ':'')+sjEsc(n.title||'Sans titre')+'</strong>'+
+   '<small>'+sjEsc(sjCat(n.category).name)+' · '+sjEsc(sjTime(n.created||n.updated))+(n.sharedWithParty?' · partagé':'')+'</small>'+
+   '<p>'+sjEsc((n.body||'').slice(0,150))+'</p>'+
    (n.promoted?'<span class="sj-card-mark">Fiche Wonq ✓</span>':'')+
   '</button>'
  ).join('')||'<div class="empty">'+(deleted?'Aucune note dans la corbeille.':'Cette session attend sa première note.')+'</div>';
@@ -256,11 +266,11 @@ function sjRenderJournal(){
     '<button class="ability" id="sjBackup">Sauvegarde JSON</button>'+
    '</div></div>'+
   '<div class="sj-session-tabs">'+sessionTabs+'</div>'+
-  '<div class="sj-book-head"><div><div class="eyebrow">'+esc(sjDate(current.startedAt))+' · point de vue Wonq</div><h3>'+esc(current.title)+'</h3><p class="meta">'+(current.status==='active'?'Session en cours':'Session archivée')+' · '+sjNotes(current.id,false).length+' note'+(sjNotes(current.id,false).length>1?'s':'')+'</p></div>'+
+  '<div class="sj-book-head"><div><div class="eyebrow">'+sjEsc(sjDate(current.startedAt))+' · point de vue Wonq</div><h3>'+sjEsc(current.title)+'</h3><p class="meta">'+(current.status==='active'?'Session en cours':'Session archivée')+' · '+sjNotes(current.id,false).length+' note'+(sjNotes(current.id,false).length>1?'s':'')+'</p></div>'+
    '<div class="row">'+(!deleted?'<button class="primary teal" id="newPersonalNote">✎ Nouvelle note</button>':'')+'<button class="ability" id="sjDeleteSession">Supprimer session</button></div></div>'+
-  '<input id="personalNoteSearch" type="search" placeholder="Chercher un nom, un indice…" value="'+esc(noteSearch)+'">'+
-  '<div class="note-filters"><button class="state '+(!noteFilter?'on':'')+'" data-note-filter="">Toutes</button><button class="state '+(noteFilter==='favorite'?'on':'')+'" data-note-filter="favorite">★ Favoris</button>'+
-   S.noteCategories.map(c=>'<button class="state '+(noteFilter===c.id?'on':'')+'" data-note-filter="'+c.id+'" style="border-color:'+c.color+'">'+esc(c.name)+'</button>').join('')+
+  '<input id="personalNoteSearch" type="search" placeholder="Chercher un nom, un indice…" value="'+sjEsc(sjBridge.getSearch())+'">'+
+  '<div class="note-filters"><button class="state '+(!filter?'on':'')+'" data-note-filter="">Toutes</button><button class="state '+(filter==='favorite'?'on':'')+'" data-note-filter="favorite">★ Favoris</button>'+
+   sjCategories().map(c=>'<button class="state '+(filter===c.id?'on':'')+'" data-note-filter="'+c.id+'" style="border-color:'+c.color+'">'+sjEsc(c.name)+'</button>').join('')+
   '</div><div class="note-grid">'+cards+'</div>'+
  '</article>';
 
@@ -270,15 +280,14 @@ function sjRenderJournal(){
  document.getElementById('sjExportSession')?.addEventListener('click',()=>sjExportSession(current.id));
  document.getElementById('sjBackup')?.addEventListener('click',sjBackupJSON);
  document.getElementById('sjDeleteSession')?.addEventListener('click',()=>sjDeleteSession(current.id));
- document.getElementById('personalNoteSearch').oninput=e=>{noteSearch=e.target.value;sjRenderJournal()};
- notes.querySelectorAll('[data-note-filter]').forEach(b=>b.onclick=()=>{noteFilter=b.dataset.noteFilter;sjRenderJournal()});
- notes.querySelectorAll('[data-note]').forEach(b=>b.onclick=()=>sjEditNote(b.dataset.note,current.id));
- notes.querySelectorAll('[data-sj-session]').forEach(b=>b.onclick=()=>{sjSelectedSessionId=b.dataset.sjSession;noteFilter='';noteSearch='';sjRenderJournal()});
+ const searchInput=document.getElementById('personalNoteSearch');
+ if(searchInput)searchInput.oninput=e=>{sjBridge.setSearch(e.target.value);sjRenderJournal(sjBridge)};
+ notes.querySelectorAll('[data-note-filter]').forEach(btn=>btn.onclick=()=>{sjBridge.setFilter(btn.dataset.noteFilter);sjRenderJournal(sjBridge)});
+ notes.querySelectorAll('[data-note]').forEach(btn=>btn.onclick=()=>sjEditNote(btn.dataset.note,current.id,false));
+ notes.querySelectorAll('[data-sj-session]').forEach(btn=>btn.onclick=()=>{sjSelectedSessionId=btn.dataset.sjSession;sjBridge.setFilter('');sjBridge.setSearch('');sjRenderJournal(sjBridge)});
 }
 
-function sjKnowledgeFrontmatter(shared){
- return 'character: Wonq\ncharacter_id: wonq\nknown_by:\n  - Wonq\nknowledge_scope: character\nshared_to_party: '+(shared?'true':'false')+'\n';
-}
+function sjKnowledgeFrontmatter(shared){return 'character: Wonq\ncharacter_id: wonq\nknown_by:\n  - Wonq\nknowledge_scope: character\nshared_to_party: '+(shared?'true':'false')+'\n'}
 function sjNoteMarkdown(n){
  const label=sjCat(n.category).name,title=n.title||label;
  return '- **'+sjTime(n.created||n.updated)+' · '+label+' — '+title+'**\n  '+String(n.body||'').replace(/\r?\n/g,'\n  ')+'\n  - Connu par : **Wonq**'+(n.sharedWithParty?' · communiqué au groupe':'')+(n.promoted?' · fiche préparée : **'+n.promoted.name+'**':'');
@@ -293,7 +302,7 @@ function sjEntityMarkdown(n,session){
  return '---\ntype: '+n.promoted.kind+'\nschema: '+SJ_SCHEMA+'\n'+sjKnowledgeFrontmatter(n.sharedWithParty)+'name: '+sjYaml(name)+'\nsource_session: '+sjYaml(session.title)+'\nsource_character: Wonq\ncanon_status: unverified-character-knowledge\n---\n\n# '+name+'\n\n> **Connaissance de Wonq uniquement.** Cette fiche n’enrichit pas automatiquement la mémoire de Kentaro ni une fiche canonique globale.\n\n## Ce que Wonq sait\n\n'+n.body+'\n\n## Source\n\n- Session : [['+session.title+']]\n- Noté le : '+sjDate(n.created||n.updated)+' à '+sjTime(n.created||n.updated)+'\n- Partagé au groupe : '+(n.sharedWithParty?'oui':'non')+'\n';
 }
 function sjExportFiles(session){
- const notes=sjNotes(session.id,false).sort((a,b)=>String(a.created||a.updated).localeCompare(String(b.created||b.updated)));
+ const notes=sjNotes(session.id,false).sort((a,c)=>String(a.created||a.updated).localeCompare(String(c.created||c.updated)));
  const date=sjIsoDate(session.startedAt),sessionName=sjSlug(session.title),files=[];
  const sessionTarget='10 - Sessions/Wonq/'+date+' — '+sessionName+'.md';
  files.push({source:'Contenu/'+sessionTarget,target:sessionTarget,kind:'session',character:'wonq',content:sjSessionMarkdown(session,notes)});
@@ -334,19 +343,15 @@ function sjMakeZip(files){
 function sjDownload(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500)}
 function sjExportSession(id){
  const session=sjSession(id);if(!session)return;
- const files=sjExportFiles(session);sjDownload(sjMakeZip(files),'Wonq - '+sjIsoDate(session.startedAt)+' - '+sjSlug(session.title)+'.zip');
- sjNotify('Export Obsidian prêt',(files.length-1)+' note(s) + manifeste · mémoire de Wonq');
+ const files=sjExportFiles(session);
+ sjDownload(sjMakeZip(files),'Wonq - '+sjIsoDate(session.startedAt)+' - '+sjSlug(session.title)+'.zip');
+ sjNotify('Export Obsidian prêt',(files.length-1)+' fiche(s) + la note de session · mémoire de Wonq');
 }
 function sjBackupJSON(){
  sjEnsureState();const payload={schema:SJ_SCHEMA,exportedAt:sjNow(),character:SJ_CHARACTER,state:sjClone(S)};
  sjDownload(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),'Wonq-backup-'+sjIsoDate()+'.json');
  sjNotify('Sauvegarde créée','État complet de Wonq et ses sessions exporté en JSON.');
 }
-
-// Replace the old free-note editor with the single session-note editor.
-editNote=function(id){sjEditNote(id,null,false)};
-exportNotes=function(){const s=sjCurrent();if(s)sjExportSession(s.id)};
-enhanceJournal=sjRenderJournal;
 
 const sjStyle=document.createElement('style');
 sjStyle.textContent=
@@ -357,5 +362,8 @@ sjStyle.textContent=
 '@media(max-width:767px){.session-fab{right:10px;bottom:calc(76px + env(safe-area-inset-bottom));padding:10px 12px}.session-fab b{display:none}.sj-book-head{display:grid;grid-template-columns:1fr}.sj-book-head .row{margin:0}.sj-book-head .primary,.sj-book-head .ability{flex:1 1 auto}}';
 document.head.appendChild(sjStyle);
 
-sjEnsureState();sjInstall();enhanceJournal();
+window.WonqSessionJournal={renderJournal:sjRenderJournal,quickNote:sjQuickNote,startSession:sjStartSession};
+sjBridge=window.WonqJournalBridge||null;
+sjEnsureState();sjInstall();
+try{render()}catch(e){}
 })();
