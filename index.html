@@ -34,6 +34,60 @@
     '<article class="panel" hidden aria-hidden="true"><h2>Accès rapide</h2>'
    );
   }
+  const sessionSpellDropdown=`
+<select id="sessionSpell" class="number" style="max-width:360px">
+  <option value="">Choisir un sort éligible…</option>
+  <optgroup label="Niveau 1 · Divination">
+    <option>Communication avec les animaux</option>
+    <option>Compréhension des langues</option>
+    <option>Détection de la magie</option>
+    <option>Détection du mal et du bien</option>
+    <option>Détection du poison et des maladies</option>
+    <option>Identification</option>
+    <option>Lien avec une bête</option>
+    <option>Marque du chasseur</option>
+  </optgroup>
+  <optgroup label="Niveau 1 · Nécromancie">
+    <option>Blessure</option>
+    <option>Frayeur</option>
+    <option>Rayon empoisonné</option>
+    <option>Simulacre de vie</option>
+  </optgroup>
+  <optgroup label="Niveau 2 · Divination">
+    <option>Augure</option>
+    <option>Détection des pensées</option>
+    <option>Épine mentale</option>
+    <option>Localisation d'animaux ou de plantes</option>
+    <option>Localisation d'objet</option>
+    <option>Sens animal</option>
+    <option>Sens des pièges</option>
+    <option>Voir l'invisible</option>
+  </optgroup>
+  <optgroup label="Niveau 2 · Nécromancie">
+    <option>Cécité/Surdité</option>
+    <option>Préservation des morts</option>
+    <option>Rayon affaiblissant</option>
+  </optgroup>
+  <optgroup label="Niveau 3 · Divination">
+    <option>Clairvoyance</option>
+    <option>Don des langues</option>
+  </optgroup>
+  <optgroup label="Niveau 3 · Nécromancie">
+    <option>Animation des morts</option>
+    <option>Communication avec les morts</option>
+    <option>Convocation de mort-vivant</option>
+    <option>Malédiction</option>
+    <option>Mort simulée</option>
+    <option>Retour à la vie</option>
+    <option>Toucher du vampire</option>
+    <option>Transfert de vie</option>
+    <option>Voile spirituel</option>
+  </optgroup>
+</select>`;
+  html=html.replace(
+   '<input id="sessionSpell" class="number" placeholder="Sort retenu" style="max-width:260px">',
+   sessionSpellDropdown
+  );
   html=html.replace('</body>','<script src="signature-icon.js?v=10"><\/script><script src="contextual-icons.js?v=5"><\/script></body>');
   document.open();document.write(html);document.close();
  }catch(e){document.body.innerHTML='<div class="boot"><div><h1>Wonq</h1><p>Impossible de charger le compagnon. Recharge la page.</p></div></div>'}
