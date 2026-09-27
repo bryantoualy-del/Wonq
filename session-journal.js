@@ -15,11 +15,11 @@ const api={
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
 const KEY='wonq-session-v3',LEGACY_V2='wonq-session-v2',LEGACY_SESSION='wonq-session-v1',LEGACY_SOCIAL='wonq-social-v2';
 const DB_NAME='wonq-session-media-v1',DB_STORE='assets';
-const TYPES=['Événement','PNJ','Lieu','Indice','Décision','Promesse','Objectif','Butin','Mémoire'];
+const TYPES=['Événement','PNJ','Absent','Lieu','Indice','Décision','Promesse','Objectif','Butin','Mémoire'];
 const PERSON_CATEGORIES=['Allié','Compagnon','Contact','Rival','Ennemi','Inconnu'];
 const PNJ_KINDS={information:'Information',status:'Statut',relation:'Relation',promesse:'Promesse',dette:'Dette',objectif:'Objectif',souvenir:'Souvenir',localisation:'Localisation'};
 const SOCIAL_ACTIONS=[
- ['Registre des Absents','Une rencontre, un disparu ou un souvenir mérite d’être consigné.'],
+ ['Registre des Absents','Consigner une voix, un disparu, un mort ou un souvenir confié à Wonq.'],
  ['Contes de l’Au-delà','Un conte ou un esprit a influencé la scène.'],
  ['La Longue Mémoire','La pipe-focaliseur a ravivé un souvenir ou soutenu un récit.'],
  ['Bâton du Vagabond Gris','Le bâton ou son histoire a eu un rôle dans la scène.'],
@@ -123,7 +123,7 @@ notesPane.appendChild(desk);
 
 const q=s=>$(s,desk),title=q('#sessionTitle'),date=q('#sessionDate'),notes=q('#sessionNotes'),entryText=q('#entryText'),entryType=q('#entryType'),entryPerson=q('#entryPerson'),entryPnjKind=q('#entryPnjKind'),pnjContext=q('#pnjCaptureContext'),preview=q('#markdownPreview');
 let entryFilter='Tout',editingEntry=-1,previewUrls=[];
-function renderPnjCapture(personId='',kind='information'){const active=entryType.value==='PNJ',selected=personId||entryPerson.value,people=data.active.people;pnjContext.hidden=!active;entryPerson.innerHTML=`<option value="">Mention libre — aucune fiche</option>${people.map(x=>`<option value="${esc(x.id)}">Lier à ${esc(x.name||'Sans nom')}</option>`).join('')}`;if(selected&&people.some(x=>x.id===selected))entryPerson.value=selected;entryPnjKind.value=PNJ_KINDS[kind]?kind:'information';entryText.placeholder=active?'Nom et information utile sur ce PNJ…':'Que vient-il de se passer ?'}
+function renderPnjCapture(personId='',kind='information'){const active=entryType.value==='PNJ',selected=personId||entryPerson.value,people=data.active.people;pnjContext.hidden=!active;entryPerson.innerHTML=`<option value="">Mention libre — aucune fiche</option>${people.map(x=>`<option value="${esc(x.id)}">Lier à ${esc(x.name||'Sans nom')}</option>`).join('')}`;if(selected&&people.some(x=>x.id===selected))entryPerson.value=selected;entryPnjKind.value=PNJ_KINDS[kind]?kind:'information';entryText.placeholder=active?'Nom et information utile sur ce PNJ…':entryType.value==='Absent'?'Nom, voix ou souvenir de l’absent — ce que Wonq apprend, entend ou promet de transmettre…':'Que vient-il de se passer ?'}
 entryType.addEventListener('change',()=>renderPnjCapture());
 function notify(text){const toast=q('#sessionToast');toast.textContent=text;toast.classList.add('show');clearTimeout(notify.timer);notify.timer=setTimeout(()=>toast.classList.remove('show'),1700)}
 function flash(button,label){const old=button.textContent;button.textContent=label;setTimeout(()=>button.textContent=old,1400)}
@@ -148,14 +148,14 @@ async function renderPeople(){
 }
 function render(){title.value=data.active.title||'';date.value=data.active.date||isoDate();if(notes!==document.activeElement)notes.value=data.active.notes||'';renderPnjCapture();renderEntries();renderPeople();renderArchives();saved()}
 
-function addOrUpdateEntry(){const text=entryText.value.trim();if(!text)return;const type=entryType.value,personId=type==='PNJ'?entryPerson.value:'',pnjKind=type==='PNJ'?entryPnjKind.value:'';const previous=editingEntry>=0?data.active.entries[editingEntry]:null,item={id:previous?.id||uid(),type,text,createdAt:previous?.createdAt||new Date().toISOString(),personId,pnjKind};if(editingEntry>=0){data.active.entries[editingEntry]=item;editingEntry=-1;q('#addEntry').textContent='Ajouter';q('#cancelEntryEdit').hidden=true}else data.active.entries.push(item);const person=data.active.people.find(x=>x.id===personId);if(person)person.participated=true;entryText.value='';persist();renderEntries();renderPeople()}
+function addOrUpdateEntry(){const text=entryText.value.trim();if(!text)return;const type=entryType.value,personId=type==='PNJ'?entryPerson.value:'',pnjKind=type==='PNJ'?entryPnjKind.value:'';const previous=editingEntry>=0?data.active.entries[editingEntry]:null,item={id:previous?.id||uid(),type,text,createdAt:previous?.createdAt||new Date().toISOString(),personId,pnjKind,registry:type==='Absent'};if(editingEntry>=0){data.active.entries[editingEntry]=item;editingEntry=-1;q('#addEntry').textContent='Ajouter';q('#cancelEntryEdit').hidden=true}else data.active.entries.push(item);const person=data.active.people.find(x=>x.id===personId);if(person)person.participated=true;entryText.value='';persist();renderEntries();renderPeople()}
 q('#addEntry').onclick=addOrUpdateEntry;entryText.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();addOrUpdateEntry()}};
-document.addEventListener('wonq-session-add',e=>{const detail=e.detail||{},text=String(detail.text||'').trim();if(!text)return;data.active.entries.push({id:uid(),type:TYPES.includes(detail.type)?detail.type:'Événement',text,createdAt:new Date().toISOString()});persist();renderEntries()});
+document.addEventListener('wonq-session-add',e=>{const detail=e.detail||{},text=String(detail.text||'').trim();if(!text)return;const type=TYPES.includes(detail.type)?detail.type:'Événement';data.active.entries.push({id:uid(),type,text,createdAt:new Date().toISOString(),registry:type==='Absent'||detail.registry===true});persist();renderEntries()});
 q('#cancelEntryEdit').onclick=()=>{editingEntry=-1;entryText.value='';q('#addEntry').textContent='Ajouter';q('#cancelEntryEdit').hidden=true;renderPnjCapture()};
 q('#entryFilters').onclick=e=>{const b=e.target.closest('[data-entry-filter]');if(b){entryFilter=b.dataset.entryFilter;renderEntries()}};
 q('#entryList').onclick=e=>{const edit=e.target.closest('[data-edit-entry]'),del=e.target.closest('[data-delete-entry]'),promote=e.target.closest('[data-promote-entry]');if(edit){editingEntry=Number(edit.dataset.editEntry);const item=data.active.entries[editingEntry];entryType.value=item.type;renderPnjCapture(item.personId||'',item.pnjKind||'information');entryText.value=item.text;entryText.focus();q('#addEntry').textContent='Mettre à jour';q('#cancelEntryEdit').hidden=false}if(del){data.active.entries.splice(Number(del.dataset.deleteEntry),1);persist();renderEntries()}if(promote){const index=Number(promote.dataset.promoteEntry),item=data.active.entries[index];editPerson('',{note:item.text,sourceEntryIndex:index})}};
 title.oninput=()=>{data.active.title=title.value;persist()};date.onchange=()=>{data.active.date=date.value||isoDate();persist()};notes.oninput=()=>{data.active.notes=notes.value;persist()};
-q('.social-shortcuts').onclick=e=>{const b=e.target.closest('[data-social-shortcut]');if(!b)return;const action=SOCIAL_ACTIONS[Number(b.dataset.socialShortcut)];data.active.entries.push({id:uid(),type:'Événement',text:`${action[0]} — ${action[1]}`,createdAt:new Date().toISOString()});api.log(`♜ ${action[0]} consigné dans le carnet.`);persist();renderEntries();notify(`${action[0]} consigné ✓`)};
+q('.social-shortcuts').onclick=e=>{const b=e.target.closest('[data-social-shortcut]');if(!b)return;const action=SOCIAL_ACTIONS[Number(b.dataset.socialShortcut)];if(action[0]==='Registre des Absents'){entryType.value='Absent';renderPnjCapture();entryText.focus();notify('Capture Registre activée · écris puis Entrée');return}data.active.entries.push({id:uid(),type:'Événement',text:`${action[0]} — ${action[1]}`,createdAt:new Date().toISOString()});api.log(`♜ ${action[0]} consigné dans le carnet.`);persist();renderEntries();notify(`${action[0]} consigné ✓`)};
 
 function personForm(x){const portrait=x.source==='obsidian'?'<div class="portrait-field"><small>Le portrait et l’identité permanente restent gérés dans la fiche Obsidian.</small></div>':`<label class="portrait-field">Portrait<input name="portrait" type="file" accept="image/png,image/jpeg,image/webp"><small>${x.assetId?'Un portrait est déjà associé. Choisir un fichier le remplacera.':'PNG, JPEG ou WebP. Il sera transmis à Obsidian avec la fiche.'}</small></label>`;return`<label>Nom<input name="name" required value="${esc(x.name||'')}" placeholder="Nom du PNJ"></label><div class="dialog-grid"><label>Catégorie<select name="category">${PERSON_CATEGORIES.map(c=>`<option ${c===x.category?'selected':''}>${c}</option>`).join('')}</select></label><label>Statut<input name="status" value="${esc(x.status||'')}" placeholder="Actif, disparu, hostile…"></label></div><label>Information de cette session<textarea name="note">${esc(x.note||'')}</textarea></label><div class="dialog-grid"><label>Dette<input name="debt" value="${esc(x.debt||'')}"></label><label>Promesse<input name="promise" value="${esc(x.promise||'')}"></label></div><label>Objectif / prochaine étape<input name="goal" value="${esc(x.goal||'')}"></label>${portrait}<div class="dialog-actions"><button value="save" class="btn-gold">${x.id?'Enregistrer':'Créer la fiche'}</button>${x.id?'<button type="button" data-delete-person class="utility-danger">Retirer</button>':''}</div>`}
 function editPerson(id,seed={}){
@@ -220,9 +220,60 @@ ${person.debt?`- **Dette :** ${person.debt}\n`:''}${person.promise?`- **Promesse
 
 - [[${session.date} — ${safeName(session.title)}]]
 `}
+const REGISTRY_DESTINATION='03 - Lore/Wonq/Registre des Absents.md';
+function absentEntries(session){return (session.entries||[]).filter(x=>x.type==='Absent'||x.registry===true)}
+function registrySessionBlock(session){
+ const entries=absentEntries(session);if(!entries.length)return'';
+ const sessionId=String(session.id||`session-${session.date||isoDate()}`).replace(/[^a-zA-Z0-9_-]/g,'');
+ const sessionNote=`${session.date||isoDate()} — ${safeName(session.title)}`;
+ return`<!-- KENTARO:REGISTRY:${sessionId}:START -->
+### [[${sessionNote}]]
+
+${entries.map(x=>`- ${x.text}`).join('\n')}
+<!-- KENTARO:REGISTRY:${sessionId}:END -->`;
+}
+function registrySeedMarkdown(session){
+ const lore=Array.isArray(window.WonqAbsentLore)?window.WonqAbsentLore:[];
+ const founders=lore.length?lore.map(x=>`### ${x.n}. ${x.name} — ${x.kind}
+
+> ${x.death}
+
+${x.story}`).join('\n\n'):'_Les pages fondatrices restent dans le compagnon de Wonq._';
+ const block=registrySessionBlock(session);
+ return`---
+type: registre_absents
+personnage: Wonq
+knowledge_scope: wonq
+known_by:
+  - Wonq
+shared_to_party: false
+tags:
+  - wonq
+  - registre-des-absents
+  - mémoire
+---
+# Registre des Absents
+
+> *Wonq ne conserve pas les morts pour les retenir. Il conserve leurs noms pour qu’ils ne disparaissent pas une seconde fois.*
+
+## Pages fondatrices
+
+${founders}
+
+## Entrées consignées en séance
+
+<!-- KENTARO:REGISTRY:AUTO:START -->
+${block}
+<!-- KENTARO:REGISTRY:AUTO:END -->
+`;
+}
+function buildRegistryUpdates(session){
+ const entries=absentEntries(session);if(!entries.length)return[];
+ return[{destination:REGISTRY_DESTINATION,sessionId:session.id||'',sessionDate:session.date||isoDate(),sessionTitle:session.title||'Session de Wonq',sessionNote:`${session.date||isoDate()} — ${safeName(session.title)}`,entries:entries.map(x=>({id:x.id||uid(),text:x.text,createdAt:x.createdAt||''}))}];
+}
 function cleanMechanical(lines){const seen=new Set();return lines.filter(x=>{const t=String(x).trim();if(!t||seen.has(t))return false;seen.add(t);return true}).slice(-100)}
 function sessionMarkdown(session){
- const entries=session.entries||[],people=touchedPeople(session),mechanical=cleanMechanical(activeMechanical(session)),locations=entries.filter(x=>x.type==='Lieu').map(x=>x.text),pnj=[...people.map(x=>x.name),...entries.filter(x=>x.type==='PNJ').map(x=>people.find(p=>p.id===x.personId)?.name).filter(Boolean)];
+ const entries=session.entries||[],people=touchedPeople(session),mechanical=cleanMechanical(activeMechanical(session)),locations=entries.filter(x=>x.type==='Lieu').map(x=>x.text),pnj=[...people.map(x=>x.name),...entries.filter(x=>x.type==='PNJ').map(x=>people.find(p=>p.id===x.personId)?.name).filter(Boolean)],absents=absentEntries(session);
  const chronological=entries.length?entries.map(x=>{const person=people.find(p=>p.id===x.personId),subject=x.type==='PNJ'&&person?` · [[${person.name}]] · ${PNJ_KINDS[x.pnjKind]||'Information'}`:'';return `- **${x.type}${subject}** — ${x.text}`}).join('\n'):'_Aucun repère saisi._';
  const discoveries=entries.filter(x=>['Lieu','Indice','Butin','Mémoire'].includes(x.type));
  const decisions=entries.filter(x=>['Décision','Promesse','Objectif'].includes(x.type));
@@ -247,7 +298,7 @@ tags:
 
 ${session.notes?.trim()||'_Aucune note libre._'}
 
-## Chronologie
+${absents.length?`> [!quote] Registre des Absents — ${absents.length} entrée${absents.length>1?'s':''}\n> Ces éléments sont aussi versés dans [[Registre des Absents]] lors de l’import Obsidian.\n\n`:''}## Chronologie
 
 ${chronological}
 
@@ -282,18 +333,19 @@ async function makeZip(files){const enc=new TextEncoder(),locals=[],centrals=[];
 function downloadBlob(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1800)}
 function exportRoute(source,destination,kind,conflict){return{source,destination,kind,conflict}}
 async function buildObsidianPackage(session=data.active){
- const people=touchedPeople(session),personUpdates=buildPersonUpdates(session,people),base=`${session.date||isoDate()} — ${safeName(session.title)}`,payload='Contenu',files=[],routes=[];
+ const people=touchedPeople(session),personUpdates=buildPersonUpdates(session,people),registryUpdates=buildRegistryUpdates(session),base=`${session.date||isoDate()} — ${safeName(session.title)}`,payload='Contenu',files=[],routes=[];
  const addText=(destination,text,kind,conflict='ask')=>{const source=`${payload}/${destination}`;files.push({path:source,text});routes.push(exportRoute(source,destination,kind,conflict))};
  const addBytes=(destination,bytes,kind,conflict='keep-newest')=>{const source=`${payload}/${destination}`;files.push({path:source,bytes});routes.push(exportRoute(source,destination,kind,conflict))};
  addText(`01 - Sessions/Wonq/${base}.md`,sessionMarkdown(session),'session','ask');
+ if(registryUpdates.length)addText(REGISTRY_DESTINATION,registrySeedMarkdown(session),'registry','skip-existing');
  for(const person of people){
   addText(`02 - Personnages/PNJ/Wonq/${safeName(person.name)}.md`,personMarkdown(person,session),'person','skip-existing');
   if(person.assetId){const media=await mediaGet(person.assetId).catch(()=>null);if(media?.blob)addBytes(`99 - Médias/${imageFileName(person)}`,new Uint8Array(await media.blob.arrayBuffer()),'media','keep-newest')}
  }
- const exportedAt=new Date(),stamp=exportedAt.toISOString().replace(/[-:]/g,'').slice(0,13),receipt=`# Import Wonq — ${session.date||isoDate()}\n\n- **Session :** [[${base}]]\n- **Identifiant :** \`${session.id||'session-sans-id'}\`\n- **PNJ suivis :** ${people.length}\n- **Nouvelles fiches proposées :** ${people.filter(x=>x.source!=='obsidian').length}\n- **Portraits :** ${people.filter(x=>x.assetId).length}\n- **Export réalisé :** ${exportedAt.toLocaleString('fr-FR')}\n\n> Les PNJ préparés mais absents ne sont pas exportés. Les simples mentions restent dans la session.\n`;
+ const exportedAt=new Date(),stamp=exportedAt.toISOString().replace(/[-:]/g,'').slice(0,13),receipt=`# Import Wonq — ${session.date||isoDate()}\n\n- **Session :** [[${base}]]\n- **Identifiant :** \`${session.id||'session-sans-id'}\`\n- **PNJ suivis :** ${people.length}\n- **Nouvelles fiches proposées :** ${people.filter(x=>x.source!=='obsidian').length}\n- **Entrées du Registre :** ${absentEntries(session).length}\n- **Portraits :** ${people.filter(x=>x.assetId).length}\n- **Export réalisé :** ${exportedAt.toLocaleString('fr-FR')}\n\n> Les PNJ préparés mais absents ne sont pas exportés. Les simples mentions restent dans la session. Les entrées « Absent » alimentent le Registre des Absents.\n`;
  addText(`98 - Archives/Imports Kentaro/Wonq/${base} - Import ${stamp}.md`,receipt,'receipt','rename');
- const manifest={schema:'kentaro.obsidian-import',version:4,createdAt:new Date().toISOString(),vaultHint:'DND',importer:{id:'kentaro-session-importer',minimumVersion:'1.3.0'},source:{character:'Wonq',characterId:'wonq',knowledgeScope:'character',doNotPropagateTo:['Kentaro']},session:{id:session.id||'',date:session.date||isoDate(),title:session.title||'Session de Wonq',note:base},routes,personUpdates};
- files.unshift({path:'_kentaro-import.json',text:JSON.stringify(manifest,null,2)},{path:'LIRE AVANT IMPORT.md',text:`# Import Wonq pour Obsidian\n\nDans Obsidian, lance la commande **Importer une session Kentaro** ou touche l’icône lune. Le même importeur classe ici un paquet provenant de Wonq.\n\nSélectionne ce ZIP, vérifie l’aperçu puis confirme. Le plugin classe automatiquement la session, les fiches PNJ, les portraits et le reçu d’import dans le coffre actif.\n\nLe traitement est local et aucune fiche PNJ existante n’est écrasée.\n`});
+ const manifest={schema:'kentaro.obsidian-import',version:4,createdAt:new Date().toISOString(),vaultHint:'DND',importer:{id:'kentaro-session-importer',minimumVersion:'1.4.0'},source:{character:'Wonq',characterId:'wonq',knowledgeScope:'character',doNotPropagateTo:['Kentaro']},session:{id:session.id||'',date:session.date||isoDate(),title:session.title||'Session de Wonq',note:base},routes,personUpdates,registryUpdates};
+ files.unshift({path:'_kentaro-import.json',text:JSON.stringify(manifest,null,2)},{path:'LIRE AVANT IMPORT.md',text:`# Import Wonq pour Obsidian\n\nDans Obsidian, lance la commande **Importer une session Kentaro** ou touche l’icône lune. Le même importeur classe ici un paquet provenant de Wonq.\n\nSélectionne ce ZIP, vérifie l’aperçu puis confirme. Le plugin classe automatiquement la session, les fiches PNJ, le Registre des Absents, les portraits et le reçu d’import dans le coffre actif.\n\nLe traitement est local : aucune fiche PNJ existante n’est écrasée et le Registre est enrichi session par session sans doublon.\n`});
  return{blob:await makeZip(files),name:`Wonq - ${base}.zip`,count:routes.length,manifest}
 }
 async function exportObsidian(session=data.active){
